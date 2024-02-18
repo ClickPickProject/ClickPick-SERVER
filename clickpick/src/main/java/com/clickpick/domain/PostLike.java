@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 public class PostLike {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "post_like_id")
     private Long id;
 

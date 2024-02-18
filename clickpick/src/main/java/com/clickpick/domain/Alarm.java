@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 @Entity
 public class Alarm {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "alarm_id")
     private Long id;
 

@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Entity
 public class Notice {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "notice_id")
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)

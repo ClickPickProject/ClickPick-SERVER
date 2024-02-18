@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 public class ReportPost {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "report_post_id")
     private Long id;
 

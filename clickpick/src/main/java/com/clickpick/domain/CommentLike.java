@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 public class CommentLike {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_like_id")
     private Long id;
 

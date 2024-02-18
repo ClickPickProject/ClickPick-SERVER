@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Entity
 public class BanUser {
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ban_user_id")
     private Long id;
 
