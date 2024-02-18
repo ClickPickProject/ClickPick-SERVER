@@ -16,6 +16,7 @@ public class Alarm {
     private User user;
 
     private String message;
-    private Boolean read; // 가능? (디폴트 안 읽음)
+    @Enumerated(EnumType.STRING)
+    private AlarmStatus status; // 가능? (디폴트 안 읽음)
     private LocalDateTime createAt;
 }
