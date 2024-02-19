@@ -2,7 +2,6 @@ package com.clickpick.repository;
 
 import com.clickpick.domain.User;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
