@@ -1,10 +1,14 @@
 package com.clickpick.domain;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDateTime;
 
 @Entity
+@DynamicInsert
 public class Alarm {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -13,10 +17,15 @@ public class Alarm {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @Column(nullable = false)
     private User user;
 
+    @Column(nullable = false)
     private String message;
     @Enumerated(EnumType.STRING)
-    private AlarmStatus status; // 가능? (디폴트 안 읽음)
+    @ColumnDefault("'UNREAD'")
+    private AlarmStatus status;
+    @CreationTimestamp
+    @Column(nullable = false)
     private LocalDateTime createAt;
 }

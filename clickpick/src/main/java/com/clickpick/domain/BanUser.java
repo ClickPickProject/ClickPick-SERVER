@@ -2,6 +2,7 @@ package com.clickpick.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -13,17 +14,21 @@ public class BanUser {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @Column(nullable = false)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id")
+    @Column(nullable = false)
     private Admin admin;
 
-    @Column(name = "start_date")
+    @CreationTimestamp
+    @Column(name = "start_date",nullable = false)
     private LocalDateTime startDate;
 
-    @Column(name = "end_date")
+    @Column(name = "end_date",nullable = false)
     private LocalDateTime endDate;
 
+    @Column(nullable = false)
     private String reason;
 }

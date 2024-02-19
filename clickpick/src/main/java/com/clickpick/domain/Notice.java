@@ -1,6 +1,7 @@
 package com.clickpick.domain;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -11,9 +12,13 @@ public class Notice {
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id")
+    @Column(nullable = false)
     private Admin admin;
-
+    @Column(nullable = false)
     private String title;
+    @Column(nullable = false)
     private String content;
+    @CreationTimestamp
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 }

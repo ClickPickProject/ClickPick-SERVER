@@ -10,11 +10,12 @@ public class CommentLike {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @Column(nullable = false)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id")
+    @Column(nullable = false)
     private Comment comment;
-    @Column(name = "like_count")
-    private Long count;
+
 }

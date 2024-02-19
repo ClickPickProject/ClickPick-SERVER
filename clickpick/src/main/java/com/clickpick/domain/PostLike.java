@@ -10,12 +10,13 @@ public class PostLike {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @Column(nullable = false)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
+    @Column(nullable = false)
     private Post post;
 
-    @Column(name = "like_count")
-    private Long count;
+
 }

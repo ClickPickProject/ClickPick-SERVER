@@ -10,8 +10,10 @@ public class Admin {
     @Id
     @Column(name = "admin_id")
     private String id;
-    @Column(name = "admin_pw")
+    @Column(name = "admin_pw",nullable = false)
     private String password;
+    @Column(nullable = false)
     private String name;
+    @Column(nullable = false)
     private String phone;
 }
