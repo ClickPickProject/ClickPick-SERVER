@@ -18,11 +18,11 @@ public class User {
     private String password;
     @Column(nullable = false)
     private String name;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String nickname;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String phone;
     @CreationTimestamp
     @Column(nullable = false)
