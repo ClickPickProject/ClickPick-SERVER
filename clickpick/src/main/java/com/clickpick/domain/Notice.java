@@ -11,8 +11,7 @@ public class Notice {
     @Column(name = "notice_id")
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "admin_id")
-    @Column(nullable = false)
+    @JoinColumn(name = "admin_id",nullable = false)
     private Admin admin;
     @Column(nullable = false)
     private String title;

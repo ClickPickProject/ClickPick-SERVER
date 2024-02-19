@@ -1,6 +1,7 @@
 package com.clickpick.domain;
 
 import jakarta.persistence.*;
+import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
@@ -10,6 +11,7 @@ import java.util.Date;
 
 @Entity
 @DynamicInsert
+@Setter // 테스트로 열어둠 dto로 변경해야함
 public class User {
 
     @Id

@@ -12,13 +12,11 @@ public class ReportPost {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    @Column(nullable = false)
+    @JoinColumn(name = "user_id",nullable = false)
     private User user;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id")
-    @Column(nullable = false)
+    @JoinColumn(name = "post_id",nullable = false)
     private Post post;
 
     @CreationTimestamp
