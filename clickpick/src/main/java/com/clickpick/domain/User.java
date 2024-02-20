@@ -11,7 +11,6 @@ import java.util.Date;
 
 @Entity
 @DynamicInsert
-@Setter // 테스트로 열어둠 dto로 변경해야함
 public class User {
 
     @Id
