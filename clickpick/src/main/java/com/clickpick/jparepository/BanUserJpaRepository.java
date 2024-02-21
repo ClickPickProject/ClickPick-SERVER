@@ -1,4 +1,4 @@
-package com.clickpick.repository;
+package com.clickpick.jparepository;
 
 import com.clickpick.domain.BanUser;
 import jakarta.persistence.EntityManager;
@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class BanUserRepository {
+public class BanUserJpaRepository {
     private final EntityManager em;
 
 

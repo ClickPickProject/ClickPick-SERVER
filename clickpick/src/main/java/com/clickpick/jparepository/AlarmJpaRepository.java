@@ -1,4 +1,4 @@
-package com.clickpick.repository;
+package com.clickpick.jparepository;
 
 import com.clickpick.domain.Alarm;
 import jakarta.persistence.EntityManager;
@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class AlarmRepository {
+public class AlarmJpaRepository {
     private final EntityManager em;
 
 

@@ -1,4 +1,4 @@
-package com.clickpick.repository;
+package com.clickpick.jparepository;
 
 import com.clickpick.domain.Admin;
 import jakarta.persistence.EntityManager;
@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class AdminRepository {
+public class AdminJpaRepository {
 
     private final EntityManager em;
 

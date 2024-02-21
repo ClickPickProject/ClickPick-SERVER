@@ -1,6 +1,5 @@
-package com.clickpick.repository;
+package com.clickpick.jparepository;
 
-import com.clickpick.domain.Admin;
 import com.clickpick.domain.Answer;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +9,7 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class AnswerRepository {
+public class AnswerJpaRepository {
     private final EntityManager em;
 
 

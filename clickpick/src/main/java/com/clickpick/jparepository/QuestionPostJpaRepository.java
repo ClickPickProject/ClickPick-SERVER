@@ -1,4 +1,4 @@
-package com.clickpick.repository;
+package com.clickpick.jparepository;
 
 import com.clickpick.domain.QuestionPost;
 import jakarta.persistence.EntityManager;
@@ -9,7 +9,7 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class QuestionPostRepository {
+public class QuestionPostJpaRepository {
     private final EntityManager em;
 
     //질문 게시글 등록

@@ -1,7 +1,6 @@
-package com.clickpick.repository;
+package com.clickpick.jparepository;
 
 import com.clickpick.domain.User;
-import com.clickpick.domain.UserStatus;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
@@ -13,7 +12,8 @@ import org.springframework.test.annotation.Rollback;
 @Transactional
 public class UserRepositoryTest {
 
-    @Autowired UserRepository userRepository;
+    @Autowired
+    UserJpaRepository userRepository;
 
     @Autowired
     EntityManager em;
