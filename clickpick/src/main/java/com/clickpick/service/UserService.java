@@ -1,6 +1,6 @@
 package com.clickpick.service;
 
-import com.clickpick.jparepository.UserJpaRepository;
+import com.clickpick.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,10 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class UserService {
 
-    private final UserJpaRepository userRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public UserService(UserJpaRepository userRepository) {
+    public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
