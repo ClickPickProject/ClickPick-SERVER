@@ -26,7 +26,7 @@ public class UserRepositoryTest {
 
     @Test
     public void basicCRUD() {
-        User user1 = new User("user1","123","ss","sssss","123213213");
+        User user1 = new User("user1","123","kk","sssss","123213213");
         User user2 = new User("user2","1321","dd","dddd","21312412412421");
         userRepository.save(user1);
         userRepository.save(user2);

@@ -1,10 +1,14 @@
 package com.clickpick.domain;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 @Entity
-@RequiredArgsConstructor
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Hashtag {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
