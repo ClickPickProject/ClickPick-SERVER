@@ -1,39 +1,7 @@
 package com.clickpick.repository;
 
 import com.clickpick.domain.Admin;
-import jakarta.persistence.EntityManager;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
-
-@Repository
-@RequiredArgsConstructor
-public class AdminRepository {
-
-    private final EntityManager em;
-
-
-    public void save(Admin admin) {
-        em.persist(admin);
-    }
-
-    public Admin findOne(String id) {
-        return em.find(Admin.class, id);
-    }
-
-    public List<Admin> findAll() {
-        return em.createQuery("select a from Admin a", Admin.class).getResultList();
-    }
-
-    public List<Admin> findByName(String name) {
-        return em.createQuery("select a from Admin a where a.name =: name", Admin.class)
-                .setParameter("name",name)
-                .getResultList();
-    }
-
-    public Admin findByPhone(String phone) {
-        return em.createQuery("select a from Admin a where a.phone =: phone", Admin.class)
-                .setParameter("phone",phone).getSingleResult();
-    }
+public interface AdminRepository extends JpaRepository <Admin, String> {
 }

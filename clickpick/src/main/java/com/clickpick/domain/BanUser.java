@@ -2,11 +2,16 @@ package com.clickpick.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BanUser {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ban_user_id")

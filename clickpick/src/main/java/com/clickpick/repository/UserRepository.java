@@ -1,46 +1,14 @@
 package com.clickpick.repository;
 
 import com.clickpick.domain.User;
-import jakarta.persistence.EntityManager;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
+import java.util.Optional;
 
-@Repository
-@RequiredArgsConstructor
-public class UserRepository {
+public interface UserRepository extends JpaRepository<User, String> {
 
+    Optional<User> findByNickname(String nickname);
 
-    private final EntityManager em;
-
-    public void save(User user) {
-        em.persist(user);
-    }
-
-    public User findOne(String id) {
-        return em.find(User.class, id);
-    }
-
-    public List<User> findAll() {
-        return em.createQuery("select u from User u", User.class).getResultList();
-    }
-
-    public List<User> findByName(String name) {
-        return em.createQuery("select u from User u where u.name =: name", User.class)
-                .setParameter("name",name)
-                .getResultList();
-    }
-
-    public User findByEmail(String email) {
-        return em.createQuery("select u from User u where u.email =: email", User.class)
-                .setParameter("email",email).getSingleResult();
-    }
-
-    public User findByPhone(String phone) {
-        return em.createQuery("select u from User u where u.phone =: phone", User.class)
-                .setParameter("phone",phone).getSingleResult();
-    }
-
+    Optional<User> findByPhone(String phone);
 
 }
