@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.annotation.Rollback;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class UserRepositoryTest {
 
     @Autowired
     UserRepository userRepository;
+    BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
     EntityManager em;
@@ -51,6 +53,20 @@ public class UserRepositoryTest {
 
 
         //삭제 검증
+
+    }
+
+    @Test
+    public void encoderTest() {
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+
+        String pass1 = bCryptPasswordEncoder.encode("1234");
+        String pass2 = bCryptPasswordEncoder.encode("1234");
+        System.out.println("pass1 = " + pass1);
+        System.out.println("pass2 = " + pass2);
+
+        assertThat(bCryptPasswordEncoder.matches("1234",pass1)).isTrue(); // Salt값으로 계산 하여 비교
+        assertThat(bCryptPasswordEncoder.matches("12345",pass2)).isTrue();
 
     }
 

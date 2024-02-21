@@ -20,14 +20,16 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception{
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
 
-        httpSecurity
-                .authorizeHttpRequests((auth) -> auth.anyRequest().permitAll());
+        http
+                .csrf((csrf) -> csrf.disable())
+                .cors((c) -> c.disable())
+                .headers((headers) -> headers.disable());
 
 
+        return http.build();
 
-        return httpSecurity.build();
     }
 
 
