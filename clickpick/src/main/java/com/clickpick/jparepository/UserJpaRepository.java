@@ -31,12 +31,6 @@ public class UserJpaRepository {
                 .setParameter("name",name)
                 .getResultList();
     }
-
-    public User findByEmail(String email) {
-        return em.createQuery("select u from User u where u.email =: email", User.class)
-                .setParameter("email",email).getSingleResult();
-    }
-
     public User findByPhone(String phone) {
         return em.createQuery("select u from User u where u.phone =: phone", User.class)
                 .setParameter("phone",phone).getSingleResult();
