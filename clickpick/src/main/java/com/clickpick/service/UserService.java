@@ -5,12 +5,14 @@ import com.clickpick.dto.user.FindIdReq;
 import com.clickpick.dto.user.LoginReq;
 import com.clickpick.dto.user.SingUpReq;
 import com.clickpick.repository.UserRepository;
+import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Optional;
 
@@ -115,8 +117,9 @@ public class UserService {
             User user = result.get();
 
             if (findIdReq.getName().equals(user.getName())) {
-                String id = user.getId();
-                return ResponseEntity.status(HttpStatus.OK).body(id);
+                JsonObject jo = new JsonObject();
+                jo.addProperty("id",user.getId());
+                return ResponseEntity.status(HttpStatus.OK).body(jo.toString());
             }
 
         }
