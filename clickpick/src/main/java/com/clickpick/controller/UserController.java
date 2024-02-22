@@ -1,7 +1,8 @@
 package com.clickpick.controller;
 
-import com.clickpick.dto.LoginReq;
-import com.clickpick.dto.SingUpReq;
+import com.clickpick.dto.user.FindIdReq;
+import com.clickpick.dto.user.LoginReq;
+import com.clickpick.dto.user.SingUpReq;
 import com.clickpick.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -53,6 +54,12 @@ public class UserController {
     }
 
     /*아이디 찾기*/
+
+   @PostMapping("/api/login/id")
+   public ResponseEntity findUserId(@RequestBody @Valid FindIdReq findIdReq){
+       ResponseEntity responseEntity = userService.findId(findIdReq);
+       return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
+   }
 
     /**/
 

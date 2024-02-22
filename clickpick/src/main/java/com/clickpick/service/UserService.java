@@ -1,9 +1,9 @@
 package com.clickpick.service;
 
-import com.clickpick.domain.ReportPost;
 import com.clickpick.domain.User;
-import com.clickpick.dto.LoginReq;
-import com.clickpick.dto.SingUpReq;
+import com.clickpick.dto.user.FindIdReq;
+import com.clickpick.dto.user.LoginReq;
+import com.clickpick.dto.user.SingUpReq;
 import com.clickpick.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -91,7 +91,7 @@ public class UserService {
     public ResponseEntity checkLogin(LoginReq loginReq) {
         Optional<User> result = userRepository.findById(loginReq.getId());
         /* 아이디가 존재하는 지 */
-        if(result.isEmpty()){
+        if(result.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("잘못된 아이디 또는 비밀번호 입니다.");
         }
         else{
@@ -105,5 +105,21 @@ public class UserService {
             }
 
         }
+    }
+
+    @Transactional
+    public ResponseEntity findId(FindIdReq findIdReq){
+        Optional<User> result = userRepository.findByPhone(findIdReq.getPhone());
+        if (result.isPresent()) {
+
+            User user = result.get();
+
+            if (findIdReq.getName().equals(user.getName())) {
+                String id = user.getId();
+                return ResponseEntity.status(HttpStatus.OK).body(id);
+            }
+
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("존재하지 않는 전화번호 및 이름입니다.");
     }
 }
