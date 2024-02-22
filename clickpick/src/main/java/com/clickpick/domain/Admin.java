@@ -6,6 +6,9 @@ import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 
 @Entity
@@ -21,4 +24,7 @@ public class Admin {
     private String name;
     @Column(nullable = false, unique = true)
     private String phone;
+    @CreationTimestamp
+    @Column(nullable = false)
+    private LocalDateTime createAt;
 }
