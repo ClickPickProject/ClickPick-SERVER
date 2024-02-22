@@ -2,6 +2,7 @@ package com.clickpick.service;
 
 import com.clickpick.domain.ReportPost;
 import com.clickpick.domain.User;
+import com.clickpick.dto.LoginReq;
 import com.clickpick.dto.SingUpReq;
 import com.clickpick.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,7 +86,24 @@ public class UserService {
         }
     }
 
+    /*로그인 체크 아이디 일치 && 비밀번호 일치*/
+    @Transactional
+    public ResponseEntity checkLogin(LoginReq loginReq) {
+        Optional<User> result = userRepository.findById(loginReq.getId());
+        /* 아이디가 존재하는 지 */
+        if(result.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("잘못된 아이디 또는 비밀번호 입니다.");
+        }
+        else{
+            User chechUser = result.get();
+            boolean matches = passwordEncoder.matches(loginReq.getPassword(), chechUser.getPassword());
+            if (matches) {
+               return ResponseEntity.status(HttpStatus.OK).body("로그인 되었습니다.");
+            }
+            else{
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("잘못된 아이디 또는 비밀번호 입니다.");
+            }
 
-
-
+        }
+    }
 }

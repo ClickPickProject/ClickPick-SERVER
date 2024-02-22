@@ -1,5 +1,6 @@
 package com.clickpick.controller;
 
+import com.clickpick.dto.LoginReq;
 import com.clickpick.dto.SingUpReq;
 import com.clickpick.service.UserService;
 import jakarta.validation.Valid;
@@ -43,5 +44,16 @@ public class UserController {
         ResponseEntity responseEntity = userService.checkPhone(phone);
         return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
     }
+
+    /* 유저 로그인 */
+    @PostMapping("/api/login")
+    public ResponseEntity login(@RequestBody @Valid LoginReq loginReq){
+        ResponseEntity responseEntity = userService.checkLogin(loginReq);
+        return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
+    }
+
+    /*아이디 찾기*/
+
+    /**/
 
 }
