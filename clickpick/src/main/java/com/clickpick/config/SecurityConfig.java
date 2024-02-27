@@ -24,7 +24,7 @@ public class SecurityConfig {
 
         http
                 .csrf((csrf) -> csrf.disable())
-                .cors((c) -> c.disable())
+                //.cors((c) -> c.disable())
                 .headers((headers) -> headers.disable());
 
 
