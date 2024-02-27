@@ -1,9 +1,8 @@
 package com.clickpick.service;
 
+import com.clickpick.config.RedisUtil;
 import com.clickpick.domain.User;
-import com.clickpick.dto.user.FindIdReq;
-import com.clickpick.dto.user.LoginReq;
-import com.clickpick.dto.user.SingUpReq;
+import com.clickpick.dto.user.*;
 import com.clickpick.repository.UserRepository;
 import com.google.gson.JsonObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +21,15 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final MailService mailService;
+    private final RedisUtil redisUtil;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder,MailService mailService, RedisUtil redisUtil) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.mailService = mailService;
+        this.redisUtil = redisUtil;
     }
 
 
@@ -53,12 +56,13 @@ public class UserService {
 
     /* 아이디(이메일) 중복 확인 */
     @Transactional
-    public ResponseEntity checkId(String id){
+    public ResponseEntity checkId(String id) throws Exception {
         Optional<User> result = userRepository.findById(id);
         if(result.isPresent()){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 가입된 ID 입니다.");
         }
         else{
+            // mailService.sendMessage(id); 이메일(아이디) 인증 시 사용
             return ResponseEntity.status(HttpStatus.OK).body("사용할 수 있는 ID 입니다.");
         }
 
@@ -109,6 +113,7 @@ public class UserService {
         }
     }
 
+    /* 아이디 찾기 */
     @Transactional
     public ResponseEntity findId(FindIdReq findIdReq){
         Optional<User> result = userRepository.findByPhone(findIdReq.getPhone());
@@ -125,4 +130,39 @@ public class UserService {
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("존재하지 않는 전화번호 및 이름입니다.");
     }
+
+    /* 비밀번호 찾기 */
+    public ResponseEntity findPassword(FindPwReq findPwReq) throws Exception {
+        Optional<User> result = userRepository.findById(findPwReq.getId());
+        if(result.isPresent()) {
+            User user = result.get();
+            if(user.getPhone().equals(findPwReq.getPhone()) && user.getName().equals(findPwReq.getName())){
+                mailService.sendMessage(user.getId());
+                return ResponseEntity.status(HttpStatus.OK).body("해당 이메일(아이디)로 인증번호를 발송하였습니다.");
+            }
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("존재하지 않는 이메일(아이디) 입니다.");
+
+    }
+
+    /* 인증코드 확인 */
+
+    public ResponseEntity checkVerificationCode(VerifyCodeReq verifyCodeReq){
+        Optional<String> redisCodeOpt = Optional.ofNullable(redisUtil.getData(verifyCodeReq.getCode()));
+
+        if(redisCodeOpt.isPresent()){
+            String redisCode = redisCodeOpt.orElse("");
+            System.out.println("redisCode = " + redisCode);
+            
+            if(redisCode.equals(verifyCodeReq.getId())) {
+                redisUtil.deleteData(verifyCodeReq.getCode());
+                return ResponseEntity.status(HttpStatus.OK).body("인증에 성공하였습니다.");
+            }
+
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("인증번호가 일치하지 않습니다.");
+
+
+    }
+
 }
