@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     /* 유저 회원 가입*/
     @PostMapping("/api/signup/user")
