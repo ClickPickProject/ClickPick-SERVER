@@ -45,5 +45,11 @@ public class User {
         this.phone = phone;
     }
 
+    //비밀번호 변경 시 사용 함수
+    public void updatePassword(String password){
+        this.password = password;
+
+    }
+
 
 }
