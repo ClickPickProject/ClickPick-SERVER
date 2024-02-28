@@ -153,7 +153,6 @@ public class UserService {
 
         if(redisCodeOpt.isPresent()){
             String redisCode = redisCodeOpt.orElse("");
-            System.out.println("redisCode = " + redisCode);
             
             if(redisCode.equals(verifyCodeReq.getId())) {
                 redisUtil.deleteData(verifyCodeReq.getCode());
