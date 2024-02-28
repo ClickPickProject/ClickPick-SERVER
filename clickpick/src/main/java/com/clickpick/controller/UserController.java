@@ -74,4 +74,11 @@ public class UserController {
 
     }
 
+    /* 비밀번호 변경 */
+    @PostMapping("/api/login/new-password")
+    public ResponseEntity changePassword(@RequestBody @Valid ChangePasswordReq changePasswordReq){
+        ResponseEntity responseEntity = userService.changeNewPassword(changePasswordReq);
+        return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
+    }
+
 }

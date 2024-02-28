@@ -131,6 +131,7 @@ public class UserService {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("존재하지 않는 전화번호 및 이름입니다.");
     }
 
+    @Transactional
     /* 비밀번호 찾기 */
     public ResponseEntity findPassword(FindPwReq findPwReq) throws Exception {
         Optional<User> result = userRepository.findById(findPwReq.getId());
@@ -146,7 +147,7 @@ public class UserService {
     }
 
     /* 인증코드 확인 */
-
+    @Transactional
     public ResponseEntity checkVerificationCode(VerifyCodeReq verifyCodeReq){
         Optional<String> redisCodeOpt = Optional.ofNullable(redisUtil.getData(verifyCodeReq.getCode()));
 
@@ -165,4 +166,23 @@ public class UserService {
 
     }
 
+    /* 비밀번호 변경 */
+    @Transactional
+    public ResponseEntity changeNewPassword(ChangePasswordReq changePasswordReq) {
+        Optional<User> result = userRepository.findById(changePasswordReq.getId());
+        if(result.isPresent()){
+            User user = result.get();
+            if(passwordEncoder.matches(changePasswordReq.getPassword(), user.getPassword())){
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("기존 비밀번호와 동일합니다.");
+            }
+            else {
+                user.updatePassword(passwordEncoder.encode(changePasswordReq.getPassword()));
+                return ResponseEntity.status(HttpStatus.OK).body("비밀번호를 변경하였습니다.");
+            }
+
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("존재하지 않는 이메일(아이디)입니다.");
+
+
+    }
 }
