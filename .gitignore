@@ -2,5 +2,5 @@
 ._.DS_Store
 **/.DS_Store
 **/._.DS_Stor
-application.yml
+clickpick/src/main/resources/application.yml
 
