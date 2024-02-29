@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.sql.exec.spi.StandardEntityInstanceResolver;
 
 @Entity
 @Getter
@@ -29,6 +30,10 @@ public class Hashtag {
     public Hashtag(Post post, User user, String content) {
         this.post = post;
         this.user = user;
+        this.content = content;
+    }
+
+    public void changeHashtag(String content){
         this.content = content;
     }
 }

@@ -4,6 +4,7 @@ import com.clickpick.domain.Hashtag;
 import com.clickpick.domain.Post;
 import com.clickpick.domain.User;
 import com.clickpick.dto.post.CreatePostReq;
+import com.clickpick.dto.post.UpdatePostReq;
 import com.clickpick.repository.AdminRepository;
 import com.clickpick.repository.HashtagRepository;
 import com.clickpick.repository.PostRepository;
@@ -39,14 +40,7 @@ public class PostService {
 
             /* 해시태그 # 기준으로 분리 후 저장*/
             if(createPostReq.getHashtag() != null) {
-                String hash = createPostReq.getHashtag();
-                String[] parts = hash.split("#");
-                for (String part : parts) {
-                    if (!part.isEmpty()) {
-                        Hashtag hashtag = new Hashtag(post, user, part);
-                        hashtagRepository.save(hashtag);
-                    }
-                }
+                divideHashtagAndSave(createPostReq.getHashtag(), post, user);
 
             }
 
@@ -61,6 +55,7 @@ public class PostService {
     /* 게시글 삭제 */
     @Transactional
     public ResponseEntity deletePost(Long postId, String userId) {
+        //유저와 게시글 id를 비교하여 동일한 값을 가져옴 => 없으면 본인이 작성하지 않음
         Optional<Post> result = postRepository.findUserPost(postId, userId);
 
         if(result.isPresent()){
@@ -77,5 +72,53 @@ public class PostService {
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("사용자가 삭제할 수 없는 게시글입니다.");
 
+    }
+
+    /* 게시글 수정 */
+    @Transactional
+    public ResponseEntity renewPost(Long postId,UpdatePostReq updatePostReq){
+        Optional<Post> result = postRepository.findUserPost(postId, updatePostReq.getUserId());
+        if(result.isPresent()){
+            /* 게시글 중 제목, 내용, 위치 변경 */
+            Optional<User> userResult = userRepository.findById(updatePostReq.getUserId());
+            Post post = result.get();
+            User user = userResult.get();
+            post.changePost(updatePostReq.getTitle(), updatePostReq.getContent(), updatePostReq.getPosition());
+
+            /* 게시글 중 해시 태그 수정 */
+            Optional<List<Hashtag>> hashResult = hashtagRepository.findPostHashtag(postId);
+            if(hashResult.isEmpty()){ // 게시글에 해시태그가 존재하지 않은 경우
+                if(updatePostReq.getHashtag() != null) { // 추가 할 해시태그 존재
+                    divideHashtagAndSave(updatePostReq.getHashtag(), post, user);
+
+                }
+            }
+            else{ // 해시태그 존재하는 경우
+                List<Hashtag> hashtags = hashResult.get();
+                for (Hashtag hashtag : hashtags) {
+                    hashtagRepository.delete(hashtag);
+                }
+                if(updatePostReq.getHashtag() != null) { // 추가 할 해시태그 존재
+                    divideHashtagAndSave(updatePostReq.getHashtag(), post, user);
+                }
+
+            }
+            return ResponseEntity.status(HttpStatus.OK).body("수정이 완료되었습니다.");
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("사용자가 수정할 수 없는 게시글입니다.");
+
+    }
+
+
+    /* 해시태그 # 분리 후 테이블 저장 함수 */
+    public void divideHashtagAndSave(String fullHashtag,Post post, User user){
+        String hash = fullHashtag;
+        String[] parts = hash.split("#");
+        for (String part : parts) {
+            if (!part.isEmpty()) {
+                Hashtag hashtag = new Hashtag(post, user, part);
+                hashtagRepository.save(hashtag);
+            }
+        }
     }
 }

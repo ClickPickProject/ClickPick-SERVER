@@ -2,6 +2,7 @@ package com.clickpick.controller;
 
 import com.clickpick.domain.Hashtag;
 import com.clickpick.dto.post.CreatePostReq;
+import com.clickpick.dto.post.UpdatePostReq;
 import com.clickpick.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,13 @@ public class PostController {
     @DeleteMapping("/api/post/{postId}/{userId}")
     public ResponseEntity erasePost(@PathVariable("postId")Long postId, @PathVariable("userId")String userId){ // 위치정보, 해시태그 없으면 null
         ResponseEntity responseEntity = postService.deletePost(postId, userId);
+        return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
+    }
+
+    /* 게시글 수정 */
+    @PostMapping("/api/post/{postId}") // userid api로 뺼까?
+    public ResponseEntity updatePost(@PathVariable("postId")Long postId,@RequestBody @Valid UpdatePostReq updatePostReq){
+        ResponseEntity responseEntity = postService.renewPost(postId,updatePostReq);
         return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
     }
 }

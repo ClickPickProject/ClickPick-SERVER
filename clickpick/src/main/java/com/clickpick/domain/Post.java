@@ -50,4 +50,10 @@ public class Post {
         this.content = content;
         this.title = title;
     }
+
+    public void changePost(String title, String content, String position){
+        this.title = title;
+        this.content = content;
+        this.position = position;
+    }
 }
