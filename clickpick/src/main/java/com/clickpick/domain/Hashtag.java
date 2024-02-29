@@ -25,4 +25,10 @@ public class Hashtag {
 
     @Column(nullable = false)
     private String content;
+
+    public Hashtag(Post post, User user, String content) {
+        this.post = post;
+        this.user = user;
+        this.content = content;
+    }
 }
