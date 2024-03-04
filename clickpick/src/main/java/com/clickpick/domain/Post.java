@@ -37,9 +37,7 @@ public class Post {
     private Long viewCount;
     @Column(name = "photo_date")
     private LocalDateTime photoDate;
-    @Column(name = "like_count",nullable = false)
-    @ColumnDefault("0")
-    private Long likeCount;
+
 
     // 이미지 넣어야함
 
