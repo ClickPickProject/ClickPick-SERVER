@@ -5,6 +5,7 @@ import com.clickpick.domain.Post;
 import com.clickpick.domain.User;
 import com.clickpick.dto.post.CreatePostReq;
 import com.clickpick.dto.post.UpdatePostReq;
+import com.clickpick.dto.post.ViewPostRes;
 import com.clickpick.repository.AdminRepository;
 import com.clickpick.repository.HashtagRepository;
 import com.clickpick.repository.PostRepository;
@@ -109,10 +110,31 @@ public class PostService {
 
     }
 
+    /* 게시글 상세 조회 */
+    @Transactional
+    public ResponseEntity selectPost(Long postId) {
+        Optional<Post> postResult = postRepository.findById(postId);
+        if(postResult.isPresent()){
+            Post post = postResult.get();
+            post.upViewCount(); //조회수 증가
+            ViewPostRes viewPostRes = new ViewPostRes(post.getUser().getNickname(), post.getTitle(), post.getContent(), post.getCreateAt(), post.getLikeCount(), post.getViewCount(), post.getPosition(), post.getPhotoDate());
+            Optional<List<Hashtag>> hashResult = hashtagRepository.findPostHashtag(postId);
+            if(hashResult.isPresent()){
+                List<Hashtag> hashtags = hashResult.get();
+                for (Hashtag hashtag : hashtags) {
+                    viewPostRes.addHashtag(hashtag.getContent());
+                }
+            }
+
+            return ResponseEntity.status(HttpStatus.OK).body(viewPostRes);
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("게시글을 찾을 수 없습니다.");
+    }
+
 
     /* 해시태그 # 분리 후 테이블 저장 함수 */
     public void divideHashtagAndSave(String fullHashtag,Post post, User user){
-        String hash = fullHashtag;
+        String hash = fullHashtag.replaceAll(" ", ""); // 공백 제거
         String[] parts = hash.split("#");
         for (String part : parts) {
             if (!part.isEmpty()) {

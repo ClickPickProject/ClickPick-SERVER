@@ -8,10 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
@@ -39,6 +36,14 @@ public class PostController {
     @PostMapping("/api/post/{postId}") // userid api로 뺼까?
     public ResponseEntity updatePost(@PathVariable("postId")Long postId,@RequestBody @Valid UpdatePostReq updatePostReq){
         ResponseEntity responseEntity = postService.renewPost(postId,updatePostReq);
+        return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
+    }
+
+
+    /* 게시글 상세 조회 */
+    @GetMapping("/api/post/{postId}")
+    public ResponseEntity viewPost(@PathVariable("postId")Long postId){
+        ResponseEntity responseEntity = postService.selectPost(postId);
         return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
     }
 }

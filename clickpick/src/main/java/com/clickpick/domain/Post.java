@@ -56,4 +56,8 @@ public class Post {
         this.content = content;
         this.position = position;
     }
+
+    public void upViewCount(){
+        this.viewCount += 1;
+    }
 }
