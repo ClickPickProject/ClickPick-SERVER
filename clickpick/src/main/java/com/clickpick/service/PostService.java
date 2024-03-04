@@ -2,14 +2,12 @@ package com.clickpick.service;
 
 import com.clickpick.domain.Hashtag;
 import com.clickpick.domain.Post;
+import com.clickpick.domain.PostLike;
 import com.clickpick.domain.User;
 import com.clickpick.dto.post.CreatePostReq;
 import com.clickpick.dto.post.UpdatePostReq;
 import com.clickpick.dto.post.ViewPostRes;
-import com.clickpick.repository.AdminRepository;
-import com.clickpick.repository.HashtagRepository;
-import com.clickpick.repository.PostRepository;
-import com.clickpick.repository.UserRepository;
+import com.clickpick.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +25,7 @@ public class PostService {
     private final AdminRepository adminRepository;
     private final PostRepository postRepository;
     private final HashtagRepository hashtagRepository;
+    private final PostLikeRepository postLikeRepository;
 
 
     /* 게시글 작성 */
@@ -116,8 +115,8 @@ public class PostService {
         Optional<Post> postResult = postRepository.findById(postId);
         if(postResult.isPresent()){
             Post post = postResult.get();
-            post.upViewCount(); //조회수 증가
-            ViewPostRes viewPostRes = new ViewPostRes(post.getUser().getNickname(), post.getTitle(), post.getContent(), post.getCreateAt(), post.getLikeCount(), post.getViewCount(), post.getPosition(), post.getPhotoDate());
+            post.upViewCount(); //조회수 증가 ->@Transaction 필요
+            ViewPostRes viewPostRes = new ViewPostRes(post.getUser().getNickname(), post.getTitle(), post.getContent(), post.getCreateAt(), postLikeRepository.countByPostId(postId), post.getViewCount(), post.getPosition(), post.getPhotoDate());
             Optional<List<Hashtag>> hashResult = hashtagRepository.findPostHashtag(postId);
             if(hashResult.isPresent()){
                 List<Hashtag> hashtags = hashResult.get();
@@ -129,6 +128,35 @@ public class PostService {
             return ResponseEntity.status(HttpStatus.OK).body(viewPostRes);
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("게시글을 찾을 수 없습니다.");
+    }
+
+    /* 게시글 좋아요 */
+    @Transactional
+    public ResponseEntity likeCount(String userId, Long postId) {
+
+        Optional<User> userResult = userRepository.findById(userId);
+        if (userResult.isPresent()){
+
+            Optional<Post> postResult = postRepository.findById(postId);
+            if(postResult.isPresent()){
+
+                Optional<PostLike> postLikeResult = postLikeRepository.checkLikePost(postId, userId);
+                if(postLikeResult.isPresent()){
+
+                    PostLike postLike = postLikeResult.get();
+                    postLikeRepository.delete(postLike);
+                    return ResponseEntity.status(HttpStatus.OK).body("좋아요를 취소하였습니다.");
+                }
+                else {
+                    PostLike postLike = new PostLike(userResult.get(),postResult.get());
+                    postLikeRepository.save(postLike);
+                    return ResponseEntity.status(HttpStatus.OK).body("해당 게시글을 좋아요 하였습니다.");
+                }
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("게시글을 찾을 수 없습니다.");
+
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("회원만 가능한 기능입니다.");
     }
 
 
@@ -143,4 +171,6 @@ public class PostService {
             }
         }
     }
+
+
 }

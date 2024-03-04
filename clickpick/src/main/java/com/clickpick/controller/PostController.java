@@ -46,4 +46,14 @@ public class PostController {
         ResponseEntity responseEntity = postService.selectPost(postId);
         return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
     }
+
+    /* 게시글 좋아요 */
+    @GetMapping("/api/likedpost/{postId}/{userId}")
+    public  ResponseEntity likePost(@PathVariable("userId")String userId,@PathVariable("postId")Long postId){
+        ResponseEntity responseEntity = postService.likeCount(userId,postId);
+        return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
+    }
+
+
+
 }
