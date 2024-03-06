@@ -9,6 +9,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -37,6 +39,7 @@ public class Post {
     private Long viewCount;
     @Column(name = "photo_date")
     private LocalDateTime photoDate;
+    private String hashtags; //조회용으로 따로 만듬..
 
 
     // 이미지 넣어야함
@@ -58,4 +61,9 @@ public class Post {
     public void upViewCount(){
         this.viewCount += 1;
     }
+
+    public void updateHashtag(String hashtag){
+        this.hashtags = hashtag;
+    }
+
 }

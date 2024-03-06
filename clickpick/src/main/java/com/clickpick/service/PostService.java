@@ -6,14 +6,20 @@ import com.clickpick.domain.PostLike;
 import com.clickpick.domain.User;
 import com.clickpick.dto.post.CreatePostReq;
 import com.clickpick.dto.post.UpdatePostReq;
+import com.clickpick.dto.post.ViewPostList;
 import com.clickpick.dto.post.ViewPostRes;
 import com.clickpick.repository.*;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.print.attribute.standard.PageRanges;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +42,7 @@ public class PostService {
             User user = result.get();
 
             Post post = new Post(user,createPostReq.getPosition(),createPostReq.getContent(),createPostReq.getTitle());
+            post.updateHashtag(createPostReq.getHashtag());
             postRepository.save(post);
 
             /* 해시태그 # 기준으로 분리 후 저장*/
@@ -100,6 +107,7 @@ public class PostService {
                 }
                 if(updatePostReq.getHashtag() != null) { // 추가 할 해시태그 존재
                     divideHashtagAndSave(updatePostReq.getHashtag(), post, user);
+                    post.updateHashtag(updatePostReq.getHashtag()); // 스트링 형태로 따로 저장
                 }
 
             }
@@ -159,6 +167,21 @@ public class PostService {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("회원만 가능한 기능입니다.");
     }
 
+    public ResponseEntity listPost(int page) {
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC,"createAt"));
+        Page<Post> pagingResult = postRepository.findAll(pageRequest);
+        Page<ViewPostList> map = pagingResult.map(post -> new ViewPostList(post.getId(),
+                post.getUser().getNickname(),
+                post.getTitle(),
+                post.getCreateAt(),
+                post.getViewCount(),
+                postLikeRepository.countByPostId(post.getId()),
+                post.getHashtags()));
+
+    return ResponseEntity.status(HttpStatus.OK).body(map);
+
+    }
+
 
     /* 해시태그 # 분리 후 테이블 저장 함수 */
     public void divideHashtagAndSave(String fullHashtag,Post post, User user){
@@ -171,6 +194,7 @@ public class PostService {
             }
         }
     }
+
 
 
 }
