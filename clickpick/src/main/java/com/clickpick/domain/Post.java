@@ -37,6 +37,9 @@ public class Post {
     @Column(name = "view_count",nullable = false)
     @ColumnDefault("0")
     private Long viewCount;
+    @Column(name = "like_count",nullable = false)
+    @ColumnDefault("0")
+    private Long likeCount;
     @Column(name = "photo_date")
     private LocalDateTime photoDate;
     private String hashtags; //조회용으로 따로 만듬..
@@ -61,6 +64,10 @@ public class Post {
     public void upViewCount(){
         this.viewCount += 1;
     }
+    public void upLikeCount(){
+        this.likeCount += 1;
+    }
+    public void downLikeCount(){ this.likeCount -= 1; }
 
     public void updateHashtag(String hashtag){
         this.hashtags = hashtag;

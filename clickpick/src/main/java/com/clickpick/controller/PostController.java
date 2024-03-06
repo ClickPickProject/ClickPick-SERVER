@@ -67,6 +67,14 @@ public class PostController {
         return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
     }
 
+    /* 베스트 게시글 리스트 조회 */
+    @GetMapping("/api/post/list/best")
+    public ResponseEntity viewBestPostList(@RequestParam(required = false, defaultValue = "0", value = "page")int page){
+        ResponseEntity responseEntity = postService.bestListPost(page);
+        return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
+    }
+
+
 
 
 

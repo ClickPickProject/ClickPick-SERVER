@@ -21,4 +21,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
 
 
-    }
+
+
+
+}

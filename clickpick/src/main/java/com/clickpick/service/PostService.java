@@ -148,16 +148,18 @@ public class PostService {
 
             Optional<Post> postResult = postRepository.findById(postId);
             if(postResult.isPresent()){
-
+                Post post = postResult.get();
                 Optional<PostLike> postLikeResult = postLikeRepository.checkLikePost(postId, userId);
                 if(postLikeResult.isPresent()){
-
                     PostLike postLike = postLikeResult.get();
                     postLikeRepository.delete(postLike);
+                    post.downLikeCount();
+
                     return ResponseEntity.status(HttpStatus.OK).body("좋아요를 취소하였습니다.");
                 }
                 else {
                     PostLike postLike = new PostLike(userResult.get(),postResult.get());
+                    post.upLikeCount();
                     postLikeRepository.save(postLike);
                     return ResponseEntity.status(HttpStatus.OK).body("해당 게시글을 좋아요 하였습니다.");
                 }
@@ -168,6 +170,7 @@ public class PostService {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("회원만 가능한 기능입니다.");
     }
 
+    /* 게시글 전체 리스트 조회 */
     public ResponseEntity listPost(int page) {
         PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC,"createAt"));
         Page<Post> pagingResult = postRepository.findAll(pageRequest);
@@ -176,13 +179,14 @@ public class PostService {
                 post.getTitle(),
                 post.getCreateAt(),
                 post.getViewCount(),
-                postLikeRepository.countByPostId(post.getId()),
+                post.getLikeCount(),
                 post.getHashtags()));
 
     return ResponseEntity.status(HttpStatus.OK).body(map);
 
     }
 
+    /* 자신이 작성한 게시글 리스트 조회 */
     public ResponseEntity myListPost(int page, String userId){
         PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC,"createAt"));
         Page<Post> pagingResult = postRepository.findUserId(userId, pageRequest);
@@ -191,7 +195,22 @@ public class PostService {
                 post.getTitle(),
                 post.getCreateAt(),
                 post.getViewCount(),
-                postLikeRepository.countByPostId(post.getId()),
+                post.getLikeCount(),
+                post.getHashtags()));
+
+        return ResponseEntity.status(HttpStatus.OK).body(map);
+    }
+
+    /* 좋아요가 많은 게시글 리스트 조회(3개) */
+    public ResponseEntity bestListPost(int page){
+        PageRequest pageRequest = PageRequest.of(page, 3, Sort.by(Sort.Direction.DESC,"likeCount"));
+        Page<Post> pagingResult = postRepository.findAll(pageRequest);
+        Page<ViewPostList> map = pagingResult.map(post -> new ViewPostList(post.getId(),
+                post.getUser().getNickname(),
+                post.getTitle(),
+                post.getCreateAt(),
+                post.getViewCount(),
+                post.getLikeCount(),
                 post.getHashtags()));
 
         return ResponseEntity.status(HttpStatus.OK).body(map);
