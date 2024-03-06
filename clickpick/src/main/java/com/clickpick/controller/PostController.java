@@ -1,6 +1,5 @@
 package com.clickpick.controller;
 
-import com.clickpick.domain.Hashtag;
 import com.clickpick.dto.post.CreatePostReq;
 import com.clickpick.dto.post.UpdatePostReq;
 import com.clickpick.service.PostService;
@@ -60,6 +59,14 @@ public class PostController {
         ResponseEntity responseEntity = postService.listPost(page);
         return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
     }
+
+    /* 자신이 작성한 게시글 리스트 조회 */
+    @GetMapping("/api/post/list/{userId}")
+    public ResponseEntity viewMyPostList(@RequestParam(required = false, defaultValue = "0", value = "page")int page, @PathVariable("userId")String userId){
+        ResponseEntity responseEntity = postService.myListPost(page,userId);
+        return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
+    }
+
 
 
 

@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.print.attribute.standard.PageRanges;
+import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -180,6 +181,20 @@ public class PostService {
 
     return ResponseEntity.status(HttpStatus.OK).body(map);
 
+    }
+
+    public ResponseEntity myListPost(int page, String userId){
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC,"createAt"));
+        Page<Post> pagingResult = postRepository.findUserId(userId, pageRequest);
+        Page<ViewPostList> map = pagingResult.map(post -> new ViewPostList(post.getId(),
+                post.getUser().getNickname(),
+                post.getTitle(),
+                post.getCreateAt(),
+                post.getViewCount(),
+                postLikeRepository.countByPostId(post.getId()),
+                post.getHashtags()));
+
+        return ResponseEntity.status(HttpStatus.OK).body(map);
     }
 
 
