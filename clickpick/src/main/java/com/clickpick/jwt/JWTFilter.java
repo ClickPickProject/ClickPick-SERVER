@@ -1,7 +1,5 @@
 package com.clickpick.jwt;
 
-import com.clickpick.domain.User;
-import com.clickpick.domain.UserStatus;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

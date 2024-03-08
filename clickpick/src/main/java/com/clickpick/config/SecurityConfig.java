@@ -40,10 +40,13 @@ public class SecurityConfig {
         http
                 .csrf((csrf) -> csrf.disable()) // 세션을 stateless 상태로 관리하기 때문에 해도 괜찮을듯
                 //.cors((c) -> c.disable())
-                .headers((headers) -> headers.disable())
+                //.headers((headers) -> headers.disable())
                 .formLogin((auth) -> auth.disable())
                 .httpBasic((auth) -> auth.disable())
-                .authorizeHttpRequests((auth) -> auth.requestMatchers("/api/signup/user").permitAll().requestMatchers("/**").hasAuthority("NORMAL").anyRequest().authenticated())
+                .authorizeHttpRequests((auth) -> auth.requestMatchers("/api/signup/user").permitAll()
+                        .requestMatchers("/api/member/**").hasAnyAuthority("NORMAL","ADMIN")
+                        .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+                        .anyRequest().authenticated())
                 .exceptionHandling((exception) -> exception.accessDeniedHandler(customAccessDeniedHandler).authenticationEntryPoint(customAuthenticationEntryPoint))
                 .addFilterBefore(new JWTFilter(jwtUtil),LoginFilter.class)
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class) // 세션을 stateless 상태로 유지

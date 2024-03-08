@@ -1,6 +1,8 @@
 package com.clickpick.jwt;
 
+import com.clickpick.domain.Admin;
 import com.clickpick.domain.User;
+import com.clickpick.repository.AdminRepository;
 import com.clickpick.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +17,7 @@ import java.util.Optional;
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
+    private final AdminRepository adminRepository;
 
 
     @Override
@@ -23,6 +26,13 @@ public class CustomUserDetailsService implements UserDetailsService {
         if(result.isPresent()){
             JWTUserDto jwtUserDto = new JWTUserDto(result.get().getId(),result.get().getPassword(),result.get().getStatus().toString());
             return new CustomUserDetails(jwtUserDto);
+        }
+        else{
+            Optional<Admin> adminResult = adminRepository.findById(username);
+            if(adminResult.isPresent()){
+                JWTUserDto jwtAdminDto = new JWTUserDto(adminResult.get().getId(),adminResult.get().getPassword(),"ADMIN");
+                return new CustomUserDetails(jwtAdminDto);
+            }
         }
 
         return null;

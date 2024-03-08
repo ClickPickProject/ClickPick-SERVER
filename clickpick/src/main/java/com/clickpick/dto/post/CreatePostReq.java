@@ -7,9 +7,6 @@ import lombok.Data;
 public class CreatePostReq {
 
     @NotBlank
-    private String userId;
-
-    @NotBlank
     private String title;
 
     @NotBlank

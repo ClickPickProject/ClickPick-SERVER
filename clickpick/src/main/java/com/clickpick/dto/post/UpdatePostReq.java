@@ -7,8 +7,6 @@ import lombok.Data;
 public class UpdatePostReq {
 
     @NotBlank
-    private String userId;
-    @NotBlank
     private String title;
     @NotBlank
     private String content;

@@ -6,6 +6,7 @@ import com.clickpick.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,24 +18,27 @@ public class PostController {
 
 
     /* 게시글 작성 */
-    @PostMapping("/api/post")
+    @PostMapping("/api/member/post")
     public ResponseEntity uploadPost(@RequestBody @Valid CreatePostReq createPostReq){ // 위치정보, 해시태그 없으면 null
-        ResponseEntity responseEntity = postService.createPost(createPostReq);
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        ResponseEntity responseEntity = postService.createPost(userId, createPostReq);
         return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
     }
 
 
     /* 게시글 삭제 */
-    @DeleteMapping("/api/post/{postId}/{userId}")
-    public ResponseEntity erasePost(@PathVariable("postId")Long postId, @PathVariable("userId")String userId){ // 위치정보, 해시태그 없으면 null
+    @DeleteMapping("/api/member/post/{postId}")
+    public ResponseEntity erasePost(@PathVariable("postId")Long postId){ // 위치정보, 해시태그 없으면 null
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         ResponseEntity responseEntity = postService.deletePost(postId, userId);
         return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
     }
 
     /* 게시글 수정 */
-    @PostMapping("/api/post/{postId}") // userid api로 뺼까?
+    @PostMapping("/api/member/post/{postId}")
     public ResponseEntity updatePost(@PathVariable("postId")Long postId,@RequestBody @Valid UpdatePostReq updatePostReq){
-        ResponseEntity responseEntity = postService.renewPost(postId,updatePostReq);
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        ResponseEntity responseEntity = postService.renewPost(postId, userId, updatePostReq);
         return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
     }
 
@@ -47,7 +51,7 @@ public class PostController {
     }
 
     /* 게시글 좋아요 */
-    @GetMapping("/api/likedpost/{postId}/{userId}")
+    @GetMapping("/api/member/likedpost/{postId}/{userId}")
     public  ResponseEntity likePost(@PathVariable("userId")String userId,@PathVariable("postId")Long postId){
         ResponseEntity responseEntity = postService.likeCount(userId,postId);
         return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
@@ -61,8 +65,9 @@ public class PostController {
     }
 
     /* 자신이 작성한 게시글 리스트 조회 */
-    @GetMapping("/api/post/list/{userId}")
-    public ResponseEntity viewMyPostList(@RequestParam(required = false, defaultValue = "0", value = "page")int page, @PathVariable("userId")String userId){
+    @GetMapping("/api/member/post/list")
+    public ResponseEntity viewMyPostList(@RequestParam(required = false, defaultValue = "0", value = "page")int page){
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         ResponseEntity responseEntity = postService.myListPost(page,userId);
         return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
     }

@@ -37,8 +37,8 @@ public class PostService {
 
     /* 게시글 작성 */
     @Transactional
-    public ResponseEntity createPost(CreatePostReq createPostReq) {
-        Optional<User> result = userRepository.findById(createPostReq.getUserId()); //로그인 시 이용가능이므로 체크 안함
+    public ResponseEntity createPost(String userId, CreatePostReq createPostReq) {
+        Optional<User> result = userRepository.findById(userId); //로그인 시 이용가능이므로 체크 안함
         if(result.isPresent()){
             User user = result.get();
 
@@ -84,11 +84,11 @@ public class PostService {
 
     /* 게시글 수정 */
     @Transactional
-    public ResponseEntity renewPost(Long postId,UpdatePostReq updatePostReq){
-        Optional<Post> result = postRepository.findUserPost(postId, updatePostReq.getUserId());
+    public ResponseEntity renewPost(Long postId, String userId, UpdatePostReq updatePostReq){
+        Optional<Post> result = postRepository.findUserPost(postId, userId);
         if(result.isPresent()){
             /* 게시글 중 제목, 내용, 위치 변경 */
-            Optional<User> userResult = userRepository.findById(updatePostReq.getUserId());
+            Optional<User> userResult = userRepository.findById(userId);
             Post post = result.get();
             User user = userResult.get();
             post.changePost(updatePostReq.getTitle(), updatePostReq.getContent(), updatePostReq.getPosition());
