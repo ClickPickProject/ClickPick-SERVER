@@ -61,8 +61,8 @@ public class UserService {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 가입된 ID 입니다.");
         }
         else{
-            // mailService.sendMessage(id); 이메일(아이디) 인증 시 사용
-            return ResponseEntity.status(HttpStatus.OK).body("사용할 수 있는 ID 입니다.");
+            mailService.sendMessage(id); //이메일(아이디) 인증 시 사용
+            return ResponseEntity.status(HttpStatus.OK).body("인증번호를 해당 이메일로 발송하였습니다.");
         }
 
     }
