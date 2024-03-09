@@ -19,8 +19,9 @@ public class ViewPostRes {
     private String position;
     private LocalDateTime photoDate;
     private List<String> hashtags = new ArrayList<>();
+    private String postCategory;
 
-    public ViewPostRes(String nickname, String title, String content, LocalDateTime date, Long likeCount, Long viewCount, String position, LocalDateTime photoDate) {
+    public ViewPostRes(String nickname, String title, String content, LocalDateTime date, Long likeCount, Long viewCount, String position, LocalDateTime photoDate, String postCategory) {
         this.nickname = nickname;
         this.title = title;
         this.content = content;
@@ -29,6 +30,7 @@ public class ViewPostRes {
         this.viewCount = viewCount;
         this.position = position;
         this.photoDate = photoDate;
+        this.postCategory = postCategory;
     }
 
     public void addHashtag(String hashtag) {

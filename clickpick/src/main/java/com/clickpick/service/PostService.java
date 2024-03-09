@@ -1,9 +1,6 @@
 package com.clickpick.service;
 
-import com.clickpick.domain.Hashtag;
-import com.clickpick.domain.Post;
-import com.clickpick.domain.PostLike;
-import com.clickpick.domain.User;
+import com.clickpick.domain.*;
 import com.clickpick.dto.post.CreatePostReq;
 import com.clickpick.dto.post.UpdatePostReq;
 import com.clickpick.dto.post.ViewPostList;
@@ -39,10 +36,12 @@ public class PostService {
     @Transactional
     public ResponseEntity createPost(String userId, CreatePostReq createPostReq) {
         Optional<User> result = userRepository.findById(userId); //로그인 시 이용가능이므로 체크 안함
+        if(isEnumValue(createPostReq.getPostCategory())){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("존재하지 않는 카테고리 입니다.");
+        }
         if(result.isPresent()){
             User user = result.get();
-
-            Post post = new Post(user,createPostReq.getPosition(),createPostReq.getContent(),createPostReq.getTitle());
+            Post post = new Post(user,createPostReq.getPosition(),createPostReq.getContent(),createPostReq.getTitle(),createPostReq.getPostCategory());
             post.updateHashtag(createPostReq.getHashtag());
             postRepository.save(post);
 
@@ -86,12 +85,15 @@ public class PostService {
     @Transactional
     public ResponseEntity renewPost(Long postId, String userId, UpdatePostReq updatePostReq){
         Optional<Post> result = postRepository.findUserPost(postId, userId);
+        if(isEnumValue(updatePostReq.getPostCategory())){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("존재하지 않는 카테고리 입니다.");
+        }
         if(result.isPresent()){
             /* 게시글 중 제목, 내용, 위치 변경 */
             Optional<User> userResult = userRepository.findById(userId);
             Post post = result.get();
             User user = userResult.get();
-            post.changePost(updatePostReq.getTitle(), updatePostReq.getContent(), updatePostReq.getPosition());
+            post.changePost(updatePostReq.getTitle(), updatePostReq.getContent(), updatePostReq.getPosition(), updatePostReq.getPostCategory());
 
             /* 게시글 중 해시 태그 수정 */
             Optional<List<Hashtag>> hashResult = hashtagRepository.findPostHashtag(postId);
@@ -125,7 +127,7 @@ public class PostService {
         if(postResult.isPresent()){
             Post post = postResult.get();
             post.upViewCount(); //조회수 증가 ->@Transaction 필요
-            ViewPostRes viewPostRes = new ViewPostRes(post.getUser().getNickname(), post.getTitle(), post.getContent(), post.getCreateAt(), postLikeRepository.countByPostId(postId), post.getViewCount(), post.getPosition(), post.getPhotoDate());
+            ViewPostRes viewPostRes = new ViewPostRes(post.getUser().getNickname(), post.getTitle(), post.getContent(), post.getCreateAt(), postLikeRepository.countByPostId(postId), post.getViewCount(), post.getPosition(), post.getPhotoDate(), post.getPostCategory().toString());
             Optional<List<Hashtag>> hashResult = hashtagRepository.findPostHashtag(postId);
             if(hashResult.isPresent()){
                 List<Hashtag> hashtags = hashResult.get();
@@ -180,7 +182,8 @@ public class PostService {
                 post.getCreateAt(),
                 post.getViewCount(),
                 post.getLikeCount(),
-                post.getHashtags()));
+                post.getHashtags(),
+                post.getPostCategory().toString()));
 
     return ResponseEntity.status(HttpStatus.OK).body(map);
 
@@ -196,7 +199,8 @@ public class PostService {
                 post.getCreateAt(),
                 post.getViewCount(),
                 post.getLikeCount(),
-                post.getHashtags()));
+                post.getHashtags(),
+                post.getPostCategory().toString()));
 
         return ResponseEntity.status(HttpStatus.OK).body(map);
     }
@@ -211,7 +215,8 @@ public class PostService {
                 post.getCreateAt(),
                 post.getViewCount(),
                 post.getLikeCount(),
-                post.getHashtags()));
+                post.getHashtags(),
+                post.getPostCategory().toString()));
 
         return ResponseEntity.status(HttpStatus.OK).body(map);
     }
@@ -226,6 +231,16 @@ public class PostService {
                 Hashtag hashtag = new Hashtag(post, user, part);
                 hashtagRepository.save(hashtag);
             }
+        }
+    }
+
+    public static boolean isEnumValue(String category) {
+        try {
+            // Enum.valueOf() 메서드를 사용하여 입력값이 Enum 타입에 속하는지 확인
+            PostCategory postCategory = Enum.valueOf(PostCategory.class, category);
+            return false; // 속한다면 false 반환
+        } catch (IllegalArgumentException e) {
+            return true; // 속하지 않는다면 true 반환
         }
     }
 

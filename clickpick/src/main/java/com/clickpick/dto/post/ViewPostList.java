@@ -18,8 +18,9 @@ public class ViewPostList {
     private Long viewCount;
     private Long likeCount;
     private String hashtags;
+    private String postCategory;
 
-    public ViewPostList(Long postId,String nickname, String title, LocalDateTime createAt, Long viewCount, Long likeCount, String hashtags) {
+    public ViewPostList(Long postId,String nickname, String title, LocalDateTime createAt, Long viewCount, Long likeCount, String hashtags, String postCategory) {
         this.postId = postId;
         this.nickname = nickname;
         this.title = title;
@@ -27,5 +28,6 @@ public class ViewPostList {
         this.viewCount = viewCount;
         this.likeCount = likeCount;
         this.hashtags = hashtags;
+        this.postCategory = postCategory;
     }
 }

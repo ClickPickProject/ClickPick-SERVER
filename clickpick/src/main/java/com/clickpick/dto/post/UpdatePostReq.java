@@ -1,5 +1,6 @@
 package com.clickpick.dto.post;
 
+import com.clickpick.domain.PostCategory;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -10,6 +11,8 @@ public class UpdatePostReq {
     private String title;
     @NotBlank
     private String content;
+    @NotBlank
+    private String postCategory;
 
     private String position;
 
