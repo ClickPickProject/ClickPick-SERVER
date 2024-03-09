@@ -3,10 +3,9 @@ package com.clickpick.service;
 import com.clickpick.domain.*;
 import com.clickpick.dto.post.CreatePostReq;
 import com.clickpick.dto.post.UpdatePostReq;
-import com.clickpick.dto.post.ViewPostList;
+import com.clickpick.dto.post.ViewPostListRes;
 import com.clickpick.dto.post.ViewPostRes;
 import com.clickpick.repository.*;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,8 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.print.attribute.standard.PageRanges;
-import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -86,7 +83,7 @@ public class PostService {
     public ResponseEntity renewPost(Long postId, String userId, UpdatePostReq updatePostReq){
         Optional<Post> result = postRepository.findUserPost(postId, userId);
         if(isEnumValue(updatePostReq.getPostCategory())){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("존재하지 않는 카테고리 입니다.");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("존재하지 않는카테고리입니다.");
         }
         if(result.isPresent()){
             /* 게시글 중 제목, 내용, 위치 변경 */
@@ -176,7 +173,7 @@ public class PostService {
     public ResponseEntity listPost(int page) {
         PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC,"createAt"));
         Page<Post> pagingResult = postRepository.findAll(pageRequest);
-        Page<ViewPostList> map = pagingResult.map(post -> new ViewPostList(post.getId(),
+        Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post.getId(),
                 post.getUser().getNickname(),
                 post.getTitle(),
                 post.getCreateAt(),
@@ -193,7 +190,7 @@ public class PostService {
     public ResponseEntity myListPost(int page, String userId){
         PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC,"createAt"));
         Page<Post> pagingResult = postRepository.findUserId(userId, pageRequest);
-        Page<ViewPostList> map = pagingResult.map(post -> new ViewPostList(post.getId(),
+        Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post.getId(),
                 post.getUser().getNickname(),
                 post.getTitle(),
                 post.getCreateAt(),
@@ -209,7 +206,7 @@ public class PostService {
     public ResponseEntity bestListPost(int page){
         PageRequest pageRequest = PageRequest.of(page, 3, Sort.by(Sort.Direction.DESC,"likeCount"));
         Page<Post> pagingResult = postRepository.findAll(pageRequest);
-        Page<ViewPostList> map = pagingResult.map(post -> new ViewPostList(post.getId(),
+        Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post.getId(),
                 post.getUser().getNickname(),
                 post.getTitle(),
                 post.getCreateAt(),

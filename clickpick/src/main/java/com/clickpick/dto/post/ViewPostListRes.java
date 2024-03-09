@@ -1,15 +1,11 @@
 package com.clickpick.dto.post;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-import org.springframework.cglib.core.Local;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
-public class ViewPostList {
+public class ViewPostListRes {
 
     private Long postId;
     private String nickname;
@@ -20,7 +16,7 @@ public class ViewPostList {
     private String hashtags;
     private String postCategory;
 
-    public ViewPostList(Long postId,String nickname, String title, LocalDateTime createAt, Long viewCount, Long likeCount, String hashtags, String postCategory) {
+    public ViewPostListRes(Long postId, String nickname, String title, LocalDateTime createAt, Long viewCount, Long likeCount, String hashtags, String postCategory) {
         this.postId = postId;
         this.nickname = nickname;
         this.title = title;
