@@ -19,6 +19,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Query("select p from Post p where p.user.id =:userId")
     Page<Post> findUserId(@Param("userID")String userId, Pageable pageable);
 
+    @Query(value = "SELECT * FROM post ORDER BY like_count DESC LIMIT 3", nativeQuery = true)
+    List<Post> findTop3LikePost();
+
 
 
 

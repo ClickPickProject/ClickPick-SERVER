@@ -51,8 +51,9 @@ public class PostController {
     }
 
     /* 게시글 좋아요 */
-    @GetMapping("/api/member/likedpost/{postId}/{userId}")
-    public  ResponseEntity likePost(@PathVariable("userId")String userId,@PathVariable("postId")Long postId){
+    @GetMapping("/api/member/likedpost/{postId}")
+    public  ResponseEntity likePost(@PathVariable("postId")Long postId){
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         ResponseEntity responseEntity = postService.likeCount(userId,postId);
         return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
     }
@@ -74,8 +75,8 @@ public class PostController {
 
     /* 베스트 게시글 리스트 조회 */
     @GetMapping("/api/post/list/best")
-    public ResponseEntity viewBestPostList(@RequestParam(required = false, defaultValue = "0", value = "page")int page){
-        ResponseEntity responseEntity = postService.bestListPost(page);
+    public ResponseEntity viewBestPostList(){
+        ResponseEntity responseEntity = postService.bestListPost();
         return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
     }
 

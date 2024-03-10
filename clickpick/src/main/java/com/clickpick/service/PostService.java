@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,14 +64,14 @@ public class PostService {
         Optional<Post> result = postRepository.findUserPost(postId, userId);
 
         if(result.isPresent()){
-            /* 해시태그 존재 시 삭제*/
-            Optional<List<Hashtag>> hashResult = hashtagRepository.findPostHashtag(postId);
-            if(hashResult.isPresent()){
-                List<Hashtag> hashtags = hashResult.get();
-                for (Hashtag hashtag : hashtags) {
-                    hashtagRepository.delete(hashtag);
-                }
-            }
+//            /* 해시태그 존재 시 삭제*/
+//            Optional<List<Hashtag>> hashResult = hashtagRepository.findPostHashtag(postId);
+//            if(hashResult.isPresent()){
+//                List<Hashtag> hashtags = hashResult.get();
+//                for (Hashtag hashtag : hashtags) {
+//                    hashtagRepository.delete(hashtag);
+//                }
+//            }
             postRepository.delete(result.get());
             return ResponseEntity.status(HttpStatus.OK).body("삭제가 완료되었습니다.");
         }
@@ -193,12 +194,18 @@ public class PostService {
     }
 
     /* 좋아요가 많은 게시글 리스트 조회(3개) */
-    public ResponseEntity bestListPost(int page){
-        PageRequest pageRequest = PageRequest.of(page, 3, Sort.by(Sort.Direction.DESC,"likeCount"));
-        Page<Post> pagingResult = postRepository.findAll(pageRequest);
-        Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post));
+    public ResponseEntity bestListPost(){
+        List<Post> bestPosts = postRepository.findTop3LikePost();
+        List<ViewPostListRes> viewPostListResList = new ArrayList<>();
 
-        return ResponseEntity.status(HttpStatus.OK).body(map);
+        if(bestPosts.size() > 0){
+            for (Post bestPost : bestPosts) {
+                ViewPostListRes viewPostListRes = new ViewPostListRes(bestPost);
+                viewPostListResList.add(viewPostListRes);
+            }
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(viewPostListResList);
     }
 
 
@@ -211,7 +218,4 @@ public class PostService {
             return true; // 속하지 않는다면 true 반환
         }
     }
-
-
-
 }
