@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 @Data
 public class ViewPostRes {
 
+    private Long postId;
     private String nickname;
     private String title;
     private String content;
@@ -25,19 +26,9 @@ public class ViewPostRes {
     private String postCategory;
     private Long commentCount;
 
-    public ViewPostRes(String nickname, String title, String content, LocalDateTime date, Long likeCount, Long viewCount, String position, LocalDateTime photoDate, String postCategory, Long commentCount) {
-        this.nickname = nickname;
-        this.title = title;
-        this.content = content;
-        this.date = date;
-        this.likeCount = likeCount;
-        this.viewCount = viewCount;
-        this.position = position;
-        this.photoDate = photoDate;
-        this.postCategory = postCategory;
-        this.commentCount = commentCount;
-    }
+
     public ViewPostRes(String nickname, Long likeCount, Post post){
+        this.postId = post.getId();
         this.nickname = nickname;
         this.title = post.getTitle();
         this.content = post.getContent();

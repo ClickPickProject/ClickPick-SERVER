@@ -64,14 +64,6 @@ public class PostService {
         Optional<Post> result = postRepository.findUserPost(postId, userId);
 
         if(result.isPresent()){
-//            /* 해시태그 존재 시 삭제*/
-//            Optional<List<Hashtag>> hashResult = hashtagRepository.findPostHashtag(postId);
-//            if(hashResult.isPresent()){
-//                List<Hashtag> hashtags = hashResult.get();
-//                for (Hashtag hashtag : hashtags) {
-//                    hashtagRepository.delete(hashtag);
-//                }
-//            }
             postRepository.delete(result.get());
             return ResponseEntity.status(HttpStatus.OK).body("삭제가 완료되었습니다.");
         }
