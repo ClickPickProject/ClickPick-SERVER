@@ -124,7 +124,7 @@ public class PostService {
         if(postResult.isPresent()){
             Post post = postResult.get();
             post.upViewCount(); //조회수 증가 ->@Transaction 필요
-            ViewPostRes viewPostRes = new ViewPostRes(post.getUser().getNickname(), post.getTitle(), post.getContent(), post.getCreateAt(), postLikeRepository.countByPostId(postId), post.getViewCount(), post.getPosition(), post.getPhotoDate(), post.getPostCategory().toString());
+            ViewPostRes viewPostRes = new ViewPostRes(post.getUser().getNickname(), post.getTitle(), post.getContent(), post.getCreateAt(), postLikeRepository.countByPostId(postId), post.getViewCount(), post.getPosition(), post.getPhotoDate(), post.getPostCategory().toString(), post.getCommentCount());
             Optional<List<Hashtag>> hashResult = hashtagRepository.findPostHashtag(postId);
             if(hashResult.isPresent()){
                 List<Hashtag> hashtags = hashResult.get();
@@ -180,7 +180,8 @@ public class PostService {
                 post.getViewCount(),
                 post.getLikeCount(),
                 post.getHashtags(),
-                post.getPostCategory().toString()));
+                post.getPostCategory().toString(),
+                post.getCommentCount()));
 
     return ResponseEntity.status(HttpStatus.OK).body(map);
 
@@ -197,7 +198,8 @@ public class PostService {
                 post.getViewCount(),
                 post.getLikeCount(),
                 post.getHashtags(),
-                post.getPostCategory().toString()));
+                post.getPostCategory().toString(),
+                post.getCommentCount()));
 
         return ResponseEntity.status(HttpStatus.OK).body(map);
     }
@@ -213,7 +215,8 @@ public class PostService {
                 post.getViewCount(),
                 post.getLikeCount(),
                 post.getHashtags(),
-                post.getPostCategory().toString()));
+                post.getPostCategory().toString(),
+                post.getCommentCount()));
 
         return ResponseEntity.status(HttpStatus.OK).body(map);
     }

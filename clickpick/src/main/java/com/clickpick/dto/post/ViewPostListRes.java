@@ -15,8 +15,9 @@ public class ViewPostListRes {
     private Long likeCount;
     private String hashtags;
     private String postCategory;
+    private Long commentCount;
 
-    public ViewPostListRes(Long postId, String nickname, String title, LocalDateTime createAt, Long viewCount, Long likeCount, String hashtags, String postCategory) {
+    public ViewPostListRes(Long postId, String nickname, String title, LocalDateTime createAt, Long viewCount, Long likeCount, String hashtags, String postCategory, Long commentCount) {
         this.postId = postId;
         this.nickname = nickname;
         this.title = title;
@@ -25,5 +26,6 @@ public class ViewPostListRes {
         this.likeCount = likeCount;
         this.hashtags = hashtags;
         this.postCategory = postCategory;
+        this.commentCount = commentCount;
     }
 }

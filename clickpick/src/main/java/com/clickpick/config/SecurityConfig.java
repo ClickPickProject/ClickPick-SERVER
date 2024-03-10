@@ -46,7 +46,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth.requestMatchers("/api/signup/user").permitAll()
                         .requestMatchers("/api/member/**").hasAnyAuthority("NORMAL","ADMIN")
                         .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
-                        .anyRequest().anonymous())
+                        .anyRequest().permitAll())
                 .exceptionHandling((exception) -> exception.accessDeniedHandler(customAccessDeniedHandler).authenticationEntryPoint(customAuthenticationEntryPoint))
                 .addFilterBefore(new JWTFilter(jwtUtil),LoginFilter.class)
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class) // 세션을 stateless 상태로 유지

@@ -42,10 +42,14 @@ public class Post {
     private Long likeCount;
     @Column(name = "photo_date")
     private LocalDateTime photoDate;
+    @Column(name = "post_category")
     @Enumerated(EnumType.STRING)
     @ColumnDefault("'자유'")
     private PostCategory postCategory;
-    private String hashtags; //조회용으로 따로 만듬..
+    @Column(name = "comment_count",nullable = false)
+    @ColumnDefault("0")
+    private Long commentCount; // 댓글 수
+    private String hashtags; // 조회용으로 따로 만듬..
 
 
     // 이미지 넣어야함
