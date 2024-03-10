@@ -19,5 +19,5 @@ public class UpdatePostReq {
 
     private String position;
 
-    private String hashtag;
+    private List<String> hashtags;
 }

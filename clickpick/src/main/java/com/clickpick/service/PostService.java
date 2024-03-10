@@ -39,13 +39,13 @@ public class PostService {
         if(result.isPresent()){
             User user = result.get();
             Post post = new Post(user,createPostReq.getPosition(),createPostReq.getContent(),createPostReq.getTitle(),createPostReq.getPostCategory());
-            post.updateHashtag(createPostReq.getHashtag());
             postRepository.save(post);
-
-            /* 해시태그 # 기준으로 분리 후 저장*/
-            if(createPostReq.getHashtag() != null) {
-                divideHashtagAndSave(createPostReq.getHashtag(), post, user);
-
+            System.out.println("createPostReq = " + createPostReq.getHashtags());
+            if(createPostReq.getHashtags() != null){
+                for (String hashtag : createPostReq.getHashtags()) {
+                    Hashtag addHashtag = new Hashtag(post,hashtag);
+                    hashtagRepository.save(addHashtag);
+                }
             }
 
             return ResponseEntity.status(HttpStatus.OK).body("게시글이 등록되었습니다.");
@@ -87,16 +87,19 @@ public class PostService {
         }
         if(result.isPresent()){
             /* 게시글 중 제목, 내용, 위치 변경 */
-            Optional<User> userResult = userRepository.findById(userId);
+            //Optional<User> userResult = userRepository.findById(userId);
             Post post = result.get();
-            User user = userResult.get();
+            //User user = userResult.get();
             post.changePost(updatePostReq.getTitle(), updatePostReq.getContent(), updatePostReq.getPosition(), updatePostReq.getPostCategory());
 
             /* 게시글 중 해시 태그 수정 */
             Optional<List<Hashtag>> hashResult = hashtagRepository.findPostHashtag(postId);
             if(hashResult.isEmpty()){ // 게시글에 해시태그가 존재하지 않은 경우
-                if(updatePostReq.getHashtag() != null) { // 추가 할 해시태그 존재
-                    divideHashtagAndSave(updatePostReq.getHashtag(), post, user);
+                if(updatePostReq.getHashtags().size() > 0) { // 추가 할 해시태그 존재
+                    for (String hashtag : updatePostReq.getHashtags()) {
+                        Hashtag addHashtag = new Hashtag(post,hashtag);
+                        hashtagRepository.save(addHashtag);
+                    }
 
                 }
             }
@@ -105,9 +108,11 @@ public class PostService {
                 for (Hashtag hashtag : hashtags) {
                     hashtagRepository.delete(hashtag);
                 }
-                if(updatePostReq.getHashtag() != null) { // 추가 할 해시태그 존재
-                    divideHashtagAndSave(updatePostReq.getHashtag(), post, user);
-                    post.updateHashtag(updatePostReq.getHashtag()); // 스트링 형태로 따로 저장
+                if(updatePostReq.getHashtags() != null) { // 추가 할 해시태그 존재
+                    for (String hashtag : updatePostReq.getHashtags()) {
+                        Hashtag addHashtag = new Hashtag(post,hashtag);
+                        hashtagRepository.save(addHashtag);
+                    }
                 }
 
             }
@@ -124,11 +129,10 @@ public class PostService {
         if(postResult.isPresent()){
             Post post = postResult.get();
             post.upViewCount(); //조회수 증가 ->@Transaction 필요
-            ViewPostRes viewPostRes = new ViewPostRes(post.getUser().getNickname(), post.getTitle(), post.getContent(), post.getCreateAt(), postLikeRepository.countByPostId(postId), post.getViewCount(), post.getPosition(), post.getPhotoDate(), post.getPostCategory().toString(), post.getCommentCount());
-            Optional<List<Hashtag>> hashResult = hashtagRepository.findPostHashtag(postId);
-            if(hashResult.isPresent()){
-                List<Hashtag> hashtags = hashResult.get();
-                for (Hashtag hashtag : hashtags) {
+            ViewPostRes viewPostRes = new ViewPostRes(post.getUser().getNickname(), postLikeRepository.countByPostId(postId), post);
+
+            if(post.getHashtags().size()>0){
+                for(Hashtag hashtag : post.getHashtags()){
                     viewPostRes.addHashtag(hashtag.getContent());
                 }
             }
@@ -173,15 +177,7 @@ public class PostService {
     public ResponseEntity listPost(int page) {
         PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC,"createAt"));
         Page<Post> pagingResult = postRepository.findAll(pageRequest);
-        Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post.getId(),
-                post.getUser().getNickname(),
-                post.getTitle(),
-                post.getCreateAt(),
-                post.getViewCount(),
-                post.getLikeCount(),
-                post.getHashtags(),
-                post.getPostCategory().toString(),
-                post.getCommentCount()));
+        Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post));
 
     return ResponseEntity.status(HttpStatus.OK).body(map);
 
@@ -191,15 +187,7 @@ public class PostService {
     public ResponseEntity myListPost(int page, String userId){
         PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC,"createAt"));
         Page<Post> pagingResult = postRepository.findUserId(userId, pageRequest);
-        Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post.getId(),
-                post.getUser().getNickname(),
-                post.getTitle(),
-                post.getCreateAt(),
-                post.getViewCount(),
-                post.getLikeCount(),
-                post.getHashtags(),
-                post.getPostCategory().toString(),
-                post.getCommentCount()));
+        Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post));
 
         return ResponseEntity.status(HttpStatus.OK).body(map);
     }
@@ -208,31 +196,11 @@ public class PostService {
     public ResponseEntity bestListPost(int page){
         PageRequest pageRequest = PageRequest.of(page, 3, Sort.by(Sort.Direction.DESC,"likeCount"));
         Page<Post> pagingResult = postRepository.findAll(pageRequest);
-        Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post.getId(),
-                post.getUser().getNickname(),
-                post.getTitle(),
-                post.getCreateAt(),
-                post.getViewCount(),
-                post.getLikeCount(),
-                post.getHashtags(),
-                post.getPostCategory().toString(),
-                post.getCommentCount()));
+        Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post));
 
         return ResponseEntity.status(HttpStatus.OK).body(map);
     }
 
-
-    /* 해시태그 # 분리 후 테이블 저장 함수 */
-    public void divideHashtagAndSave(String fullHashtag,Post post, User user){
-        String hash = fullHashtag.replaceAll(" ", ""); // 공백 제거
-        String[] parts = hash.split("#");
-        for (String part : parts) {
-            if (!part.isEmpty()) {
-                Hashtag hashtag = new Hashtag(post, user, part);
-                hashtagRepository.save(hashtag);
-            }
-        }
-    }
 
     public static boolean isEnumValue(String category) {
         try {

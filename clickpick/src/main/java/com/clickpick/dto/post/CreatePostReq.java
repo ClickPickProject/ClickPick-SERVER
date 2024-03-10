@@ -1,5 +1,8 @@
 package com.clickpick.dto.post;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -20,8 +23,6 @@ public class CreatePostReq {
 
     private String position;
 
-    private String hashtag;
-
-
+    private List<String> hashtags = new ArrayList<>();
 
 }

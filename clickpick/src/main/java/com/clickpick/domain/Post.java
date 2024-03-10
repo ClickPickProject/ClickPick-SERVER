@@ -49,7 +49,8 @@ public class Post {
     @Column(name = "comment_count",nullable = false)
     @ColumnDefault("0")
     private Long commentCount; // 댓글 수
-    private String hashtags; // 조회용으로 따로 만듬..
+    @OneToMany(mappedBy = "post")
+    private List<Hashtag> hashtags = new ArrayList<>(); //
 
 
     // 이미지 넣어야함
@@ -79,7 +80,14 @@ public class Post {
     public void downLikeCount(){ this.likeCount -= 1; }
 
     public void updateHashtag(String hashtag){
-        this.hashtags = hashtag;
+        //this.hashtags = hashtag;
     }
+
+    public void addHashtag(String hashtag){
+        Hashtag hashtags = new Hashtag(this,hashtag);
+        this.hashtags.add(hashtags);
+        hashtags.addPost(this);
+    }
+
 
 }

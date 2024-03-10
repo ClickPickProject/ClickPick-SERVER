@@ -20,20 +20,21 @@ public class Hashtag {
     @JoinColumn(name = "post_id",nullable = false)
     private Post post;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id",nullable = false)
-    private User user;
-
     @Column(nullable = false)
     private String content;
 
-    public Hashtag(Post post, User user, String content) {
+    public Hashtag(Post post, String content) {
         this.post = post;
-        this.user = user;
         this.content = content;
     }
 
     public void changeHashtag(String content){
         this.content = content;
     }
+
+    public void addPost(Post post){
+        this.post = post;
+    }
+
+
 }
