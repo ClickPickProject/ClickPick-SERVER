@@ -33,7 +33,7 @@ public class PostService {
     /* 게시글 작성 */
     @Transactional
     public ResponseEntity createPost(String userId, CreatePostReq createPostReq) {
-        Optional<User> result = userRepository.findById(userId); //로그인 시 이용가능이므로 체크 안함
+        Optional<User> result = userRepository.findById(userId);
         if(isEnumValue(createPostReq.getPostCategory())){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("존재하지 않는 카테고리 입니다.");
         }
@@ -79,10 +79,7 @@ public class PostService {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("존재하지 않는카테고리입니다.");
         }
         if(result.isPresent()){
-            /* 게시글 중 제목, 내용, 위치 변경 */
-            //Optional<User> userResult = userRepository.findById(userId);
             Post post = result.get();
-            //User user = userResult.get();
             post.changePost(updatePostReq.getTitle(), updatePostReq.getContent(), updatePostReq.getPosition(), updatePostReq.getPostCategory());
 
             /* 게시글 중 해시 태그 수정 */

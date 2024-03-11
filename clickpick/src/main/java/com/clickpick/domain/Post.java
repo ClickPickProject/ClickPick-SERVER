@@ -66,11 +66,11 @@ public class Post {
         this.postCategory = PostCategory.valueOf(category);
     }
 
-    public void changePost(String title, String content, String position, String catogory){
+    public void changePost(String title, String content, String position, String category){
         this.title = title;
         this.content = content;
         this.position = position;
-        this.postCategory = PostCategory.valueOf(catogory);
+        this.postCategory = PostCategory.valueOf(category);
     }
 
     public void upViewCount(){

@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDateTime;
@@ -28,6 +29,7 @@ public class Comment {
     private User user;
     @Column(nullable = false)
     private String content;
+    @CreationTimestamp
     @Column(nullable = false)
     private LocalDateTime createAt;
 
@@ -35,4 +37,18 @@ public class Comment {
     @ColumnDefault("0")
     private Long count;
 
+    public Comment(Post post, User user, String content) { // 게시글 작성
+        this.post = post;
+        this.user = user;
+        this.content = content;
+    }
+
+    public void changeComment(String content){
+        this.content = content;
+    }
+
+    public void upLikeCount(){
+        this.count += 1;
+    }
+    public void downLikeCount(){ this.count -= 1; }
 }
