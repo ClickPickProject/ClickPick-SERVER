@@ -29,7 +29,7 @@ public class ViewPostListRes {
         this.likeCount = post.getLikeCount();
         this.hashtags = post.getHashtags().stream().map(Hashtag::getContent).collect(Collectors.toList());
         this.postCategory = post.getPostCategory().toString();
-        this.commentCount = post.getCommentCount();
+        this.commentCount = (long) post.getComments().size();
     }
 
 

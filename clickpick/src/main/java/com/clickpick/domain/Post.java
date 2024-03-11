@@ -46,13 +46,12 @@ public class Post {
     @Enumerated(EnumType.STRING)
     @ColumnDefault("'자유'")
     private PostCategory postCategory;
-    @Column(name = "comment_count",nullable = false)
-    @ColumnDefault("0")
-    private Long commentCount; // 댓글 수
     @OneToMany(mappedBy = "post",cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Hashtag> hashtags = new ArrayList<>(); //
     @OneToMany(mappedBy = "post",cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<PostLike> postLikes = new ArrayList<>();
+    @OneToMany(mappedBy = "post",cascade = CascadeType.REMOVE,orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
 
 
     // 이미지 넣어야함

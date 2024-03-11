@@ -38,7 +38,7 @@ public class ViewPostRes {
         this.position = post.getPosition();
         this.photoDate = post.getPhotoDate();
         this.postCategory = post.getPostCategory().toString();
-        this.commentCount = post.getCommentCount();
+        this.commentCount = (long) post.getComments().size();
     }
 
     public void addHashtag(String hashtag) {
