@@ -1,8 +1,6 @@
 package com.clickpick.controller;
 
 import com.clickpick.dto.comment.CreateCommentReq;
-import com.clickpick.dto.post.CreatePostReq;
-import com.clickpick.dto.post.UpdatePostReq;
 import com.clickpick.service.CommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @RequiredArgsConstructor
 public class CommentController {
-    private CommentService commentService;
+    private final CommentService commentService;
 
     /* 댓글 작성 */
     @PostMapping("/api/member/comment")

@@ -9,6 +9,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @DynamicInsert
@@ -36,6 +38,9 @@ public class Comment {
     @Column(name = "like_count")
     @ColumnDefault("0")
     private Long count;
+
+    @OneToMany(mappedBy = "comment")
+    private List<CommentLike> commentLikes = new ArrayList<>(); //좋아요 수
 
     public Comment(Post post, User user, String content) { // 게시글 작성
         this.post = post;

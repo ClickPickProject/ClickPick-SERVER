@@ -18,10 +18,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class CommentService {
-    private CommentRepository commentRepository;
-    private UserRepository userRepository;
-    private PostRepository postRepository;
-    private CommentLikeRepository commentLikeRepository;
+    private final CommentRepository commentRepository;
+    private final UserRepository userRepository;
+    private final PostRepository postRepository;
+    private final CommentLikeRepository commentLikeRepository;
 
     /* 댓글 작성 */
     @Transactional
@@ -33,6 +33,7 @@ public class CommentService {
             if(postResult.isPresent()){
                 Post post = postResult.get();
                 Comment comment = new Comment(post,user,createCommentReq.getContent());
+                commentRepository.save(comment);
                 return ResponseEntity.status(HttpStatus.OK).body("댓글이 등록되었습니다.");
             }
 
@@ -58,6 +59,7 @@ public class CommentService {
     }
 
     /* 댓글 수정 */
+    @Transactional
     public ResponseEntity renewComment(String userId, Long commentId, CreateCommentReq updateCommentReq) {
         Optional<Comment> result = commentRepository.findUserComment(commentId, userId);
 
@@ -67,11 +69,12 @@ public class CommentService {
 
             return ResponseEntity.status(HttpStatus.OK).body("수정이 완료되었습니다.");
         }
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("사용자가 삭제할 수 없는 댓글입니다.");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("사용자가 수정할 수 없는 댓글입니다.");
 
     }
 
     /* 댓글 좋아요 */
+    @Transactional
     public ResponseEntity likeCount(String userId, Long commentId) {
         Optional<User> userResult = userRepository.findById(userId);
         if (userResult.isPresent()){
