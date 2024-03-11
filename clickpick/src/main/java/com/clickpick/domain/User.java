@@ -45,6 +45,12 @@ public class User {
         this.phone = phone;
     }
 
+    //세션 생성용
+    public User(String id, UserStatus status) {
+        this.id = id;
+        this.status = status;
+    }
+
     //비밀번호 변경 시 사용 함수
     public void updatePassword(String password){
         this.password = password;

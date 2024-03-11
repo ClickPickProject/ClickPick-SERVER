@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.sql.exec.spi.StandardEntityInstanceResolver;
 
 @Entity
 @Getter
@@ -19,10 +20,21 @@ public class Hashtag {
     @JoinColumn(name = "post_id",nullable = false)
     private Post post;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id",nullable = false)
-    private User user;
-
     @Column(nullable = false)
     private String content;
+
+    public Hashtag(Post post, String content) {
+        this.post = post;
+        this.content = content;
+    }
+
+    public void changeHashtag(String content){
+        this.content = content;
+    }
+
+    public void addPost(Post post){
+        this.post = post;
+    }
+
+
 }

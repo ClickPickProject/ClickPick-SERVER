@@ -55,21 +55,19 @@ public class UserService {
     }
 
     /* 아이디(이메일) 중복 확인 */
-    @Transactional
     public ResponseEntity checkId(String id) throws Exception {
         Optional<User> result = userRepository.findById(id);
         if(result.isPresent()){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 가입된 ID 입니다.");
         }
         else{
-            // mailService.sendMessage(id); 이메일(아이디) 인증 시 사용
-            return ResponseEntity.status(HttpStatus.OK).body("사용할 수 있는 ID 입니다.");
+            mailService.sendMessage(id); //이메일(아이디) 인증 시 사용
+            return ResponseEntity.status(HttpStatus.OK).body("인증번호를 해당 이메일로 발송하였습니다.");
         }
 
     }
 
     /* 닉네임 중복 확인 */
-    @Transactional
     public ResponseEntity checkNickname(String nickname){
         Optional<User> result = userRepository.findByNickname(nickname);
         if(result.isPresent()){
@@ -81,7 +79,6 @@ public class UserService {
     }
 
     /* 전화번호 중복 확인 */
-    @Transactional
     public ResponseEntity checkPhone(String phone) {
         Optional<User> result = userRepository.findByPhone(phone);
         if(result.isPresent()){
@@ -93,7 +90,6 @@ public class UserService {
     }
 
     /*로그인 체크 아이디 일치 && 비밀번호 일치*/
-    @Transactional
     public ResponseEntity checkLogin(LoginReq loginReq) {
         Optional<User> result = userRepository.findById(loginReq.getId());
         /* 아이디가 존재하는 지 */
@@ -114,7 +110,6 @@ public class UserService {
     }
 
     /* 아이디 찾기 */
-    @Transactional
     public ResponseEntity findId(FindIdReq findIdReq){
         Optional<User> result = userRepository.findByPhone(findIdReq.getPhone());
         if (result.isPresent()) {
@@ -131,7 +126,6 @@ public class UserService {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("존재하지 않는 전화번호 및 이름입니다.");
     }
 
-    @Transactional
     /* 비밀번호 찾기 */
     public ResponseEntity findPassword(FindPwReq findPwReq) throws Exception {
         Optional<User> result = userRepository.findById(findPwReq.getId());

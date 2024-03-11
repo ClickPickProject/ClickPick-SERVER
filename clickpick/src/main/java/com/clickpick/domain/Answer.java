@@ -29,5 +29,4 @@ public class Answer {
     @CreationTimestamp
     private LocalDateTime createAt;
 
-
 }
