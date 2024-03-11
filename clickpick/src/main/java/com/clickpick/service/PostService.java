@@ -52,7 +52,7 @@ public class PostService {
 
             return ResponseEntity.status(HttpStatus.OK).body("게시글이 등록되었습니다.");
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("존재하지 않는 이메일(아이디) 입니다.");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("존재하지 않는 이메일(아이디)입니다.");
 
 
 
