@@ -35,10 +35,6 @@ public class Comment {
     @Column(nullable = false)
     private LocalDateTime createAt;
 
-    @Column(name = "like_count")
-    @ColumnDefault("0")
-    private Long count;
-
     @OneToMany(mappedBy = "comment")
     private List<CommentLike> commentLikes = new ArrayList<>(); //좋아요 수
 
@@ -52,8 +48,4 @@ public class Comment {
         this.content = content;
     }
 
-    public void upLikeCount(){
-        this.count += 1;
-    }
-    public void downLikeCount(){ this.count -= 1; }
 }

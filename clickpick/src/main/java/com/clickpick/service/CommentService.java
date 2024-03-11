@@ -86,13 +86,10 @@ public class CommentService {
                 if(commentLikeResult.isPresent()){
                     CommentLike commentLike = commentLikeResult.get();
                     commentLikeRepository.delete(commentLike);
-                    comment.downLikeCount();
-
                     return ResponseEntity.status(HttpStatus.OK).body("좋아요를 취소하였습니다.");
                 }
                 else {
                     CommentLike commentLike = new CommentLike(userResult.get(), commentResult.get());
-                    comment.upLikeCount();
                     commentLikeRepository.save(commentLike);
                     return ResponseEntity.status(HttpStatus.OK).body("해당 댓글을 좋아요 하였습니다.");
                 }

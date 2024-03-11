@@ -1,6 +1,7 @@
 package com.clickpick.service;
 
 import com.clickpick.domain.*;
+import com.clickpick.dto.comment.ViewCommentRes;
 import com.clickpick.dto.post.CreatePostReq;
 import com.clickpick.dto.post.UpdatePostReq;
 import com.clickpick.dto.post.ViewPostListRes;
@@ -28,7 +29,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final HashtagRepository hashtagRepository;
     private final PostLikeRepository postLikeRepository;
-
+    private final CommentRepository commentRepository;
 
     /* 게시글 작성 */
     @Transactional
@@ -119,13 +120,26 @@ public class PostService {
         if(postResult.isPresent()){
             Post post = postResult.get();
             post.upViewCount(); //조회수 증가 ->@Transaction 필요
-            ViewPostRes viewPostRes = new ViewPostRes(post.getUser().getNickname(), postLikeRepository.countByPostId(postId), post);
+            ViewPostRes viewPostRes = new ViewPostRes(post.getUser().getNickname(), post);
 
             if(post.getHashtags().size()>0){
                 for(Hashtag hashtag : post.getHashtags()){
                     viewPostRes.addHashtag(hashtag.getContent());
                 }
             }
+
+            /* 댓글 조회 */
+            Optional<List<Comment>> commentResult = commentRepository.findByPostId(postId);
+            List<ViewCommentRes> viewCommentResList = new ArrayList<>();
+            if(commentResult.isPresent()){
+                for(Comment comment : commentResult.get()){
+                    ViewCommentRes viewCommentRes = new ViewCommentRes(comment);
+                    viewCommentResList.add(viewCommentRes);
+                }
+
+                viewPostRes.addComment(viewCommentResList);
+            }
+
 
             return ResponseEntity.status(HttpStatus.OK).body(viewPostRes);
         }
@@ -146,13 +160,11 @@ public class PostService {
                 if(postLikeResult.isPresent()){
                     PostLike postLike = postLikeResult.get();
                     postLikeRepository.delete(postLike);
-                    post.downLikeCount();
 
                     return ResponseEntity.status(HttpStatus.OK).body("좋아요를 취소하였습니다.");
                 }
                 else {
                     PostLike postLike = new PostLike(userResult.get(),postResult.get());
-                    post.upLikeCount();
                     postLikeRepository.save(postLike);
                     return ResponseEntity.status(HttpStatus.OK).body("해당 게시글을 좋아요 하였습니다.");
                 }

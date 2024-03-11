@@ -3,6 +3,7 @@ package com.clickpick.dto.post;
 
 import com.clickpick.domain.Hashtag;
 import com.clickpick.domain.Post;
+import com.clickpick.dto.comment.ViewCommentRes;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -25,15 +26,16 @@ public class ViewPostRes {
     private List<String> hashtags = new ArrayList<>();
     private String postCategory;
     private Long commentCount;
+    private List<ViewCommentRes> comments = new ArrayList<>();
 
 
-    public ViewPostRes(String nickname, Long likeCount, Post post){
+    public ViewPostRes(String nickname, Post post){
         this.postId = post.getId();
         this.nickname = nickname;
         this.title = post.getTitle();
         this.content = post.getContent();
         this.date = post.getCreateAt();
-        this.likeCount = likeCount;
+        this.likeCount = (long) post.getPostLikes().size();
         this.viewCount = post.getViewCount();
         this.position = post.getPosition();
         this.photoDate = post.getPhotoDate();
@@ -43,6 +45,11 @@ public class ViewPostRes {
 
     public void addHashtag(String hashtag) {
         hashtags.add(hashtag);
+    }
+
+    public void addComment(List<ViewCommentRes> viewCommentResList){
+        this.comments = viewCommentResList;
+
     }
 
 
