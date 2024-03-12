@@ -26,10 +26,11 @@ public class ViewPostRes {
     private List<String> hashtags = new ArrayList<>();
     private String postCategory;
     private Long commentCount;
+    private boolean likePostCheck;
     private List<ViewCommentRes> comments = new ArrayList<>();
 
 
-    public ViewPostRes(String nickname, Post post){
+    public ViewPostRes(String nickname, Post post, boolean likePostCheck){
         this.postId = post.getId();
         this.nickname = nickname;
         this.title = post.getTitle();
@@ -41,6 +42,7 @@ public class ViewPostRes {
         this.photoDate = post.getPhotoDate();
         this.postCategory = post.getPostCategory().toString();
         this.commentCount = (long) post.getComments().size();
+        this.likePostCheck = likePostCheck;
     }
 
     public void addHashtag(String hashtag) {

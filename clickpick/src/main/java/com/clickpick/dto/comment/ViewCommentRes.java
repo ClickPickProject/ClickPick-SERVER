@@ -19,12 +19,14 @@ public class ViewCommentRes {
     private LocalDateTime createAt;
     @NotNull
     private Long likeCount;
+    private boolean likeCommentCheck;
 
-    public ViewCommentRes(Comment comment) {
+    public ViewCommentRes(Comment comment, boolean likeCommentCheck) {
         this.commentId = comment.getId();
         this.nickname = comment.getUser().getNickname();
         this.content = comment.getContent();
         this.createAt = comment.getCreateAt();
         this.likeCount = (long) comment.getCommentLikes().size();
+        this.likeCommentCheck = likeCommentCheck;
     }
 }

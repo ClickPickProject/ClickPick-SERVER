@@ -46,7 +46,8 @@ public class PostController {
     /* 게시글 상세 조회 */
     @GetMapping("/api/post/{postId}")
     public ResponseEntity viewPost(@PathVariable("postId")Long postId){
-        ResponseEntity responseEntity = postService.selectPost(postId);
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        ResponseEntity responseEntity = postService.selectPost(userId, postId);
         return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
     }
 

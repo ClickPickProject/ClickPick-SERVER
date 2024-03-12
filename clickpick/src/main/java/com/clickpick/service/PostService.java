@@ -30,6 +30,7 @@ public class PostService {
     private final HashtagRepository hashtagRepository;
     private final PostLikeRepository postLikeRepository;
     private final CommentRepository commentRepository;
+    private final CommentLikeRepository commentLikeRepository;
 
     /* 게시글 작성 */
     @Transactional
@@ -115,12 +116,20 @@ public class PostService {
 
     /* 게시글 상세 조회 */
     @Transactional
-    public ResponseEntity selectPost(Long postId) {
+    public ResponseEntity selectPost(String userId, Long postId) {
         Optional<Post> postResult = postRepository.findById(postId);
         if(postResult.isPresent()){
             Post post = postResult.get();
+            boolean likePostCheck = false;
             post.upViewCount(); //조회수 증가 ->@Transaction 필요
-            ViewPostRes viewPostRes = new ViewPostRes(post.getUser().getNickname(), post);
+            if(userId != null || userId.equals("anonymousUser")){ // 게시글 좋아요 확인 로직
+                Optional<PostLike> postLikeResult = postLikeRepository.checkLikePost(postId, userId);
+                if(postLikeResult.isPresent()){
+                    likePostCheck = true;
+                }
+            }
+
+            ViewPostRes viewPostRes = new ViewPostRes(post.getUser().getNickname(), post, likePostCheck);
 
             if(post.getHashtags().size()>0){
                 for(Hashtag hashtag : post.getHashtags()){
@@ -131,9 +140,16 @@ public class PostService {
             /* 댓글 조회 */
             Optional<List<Comment>> commentResult = commentRepository.findByPostId(postId);
             List<ViewCommentRes> viewCommentResList = new ArrayList<>();
+            boolean likeCommentCheck = false;
             if(commentResult.isPresent()){
                 for(Comment comment : commentResult.get()){
-                    ViewCommentRes viewCommentRes = new ViewCommentRes(comment);
+                    if(userId != null || userId.equals("anonymousUser")){ // 댓글 좋아요 확인 로직
+                        Optional<CommentLike> commentLikeResult = commentLikeRepository.checkLikeComment(comment.getId(), userId);
+                        if(commentLikeResult.isPresent()){
+                            likeCommentCheck = true;
+                        }
+                    }
+                    ViewCommentRes viewCommentRes = new ViewCommentRes(comment,likeCommentCheck);
                     viewCommentResList.add(viewCommentRes);
                 }
 

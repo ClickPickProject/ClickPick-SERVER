@@ -30,7 +30,7 @@ public class Post {
     @Column(nullable = false)
     private LocalDateTime createAt;
     private String position;
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50000)
     private String content;
     @Column(nullable = false)
     private String title;
