@@ -37,6 +37,9 @@ public class Post {
     @Column(name = "view_count",nullable = false)
     @ColumnDefault("0")
     private Long viewCount;
+    @Column(name = "like_count",nullable = false) //베스트 게시물 조회 시 필요
+    @ColumnDefault("0")
+    private Long likeCount;
     @Column(name = "photo_date")
     private LocalDateTime photoDate;
     @Column(name = "post_category")
@@ -72,6 +75,8 @@ public class Post {
     public void upViewCount(){
         this.viewCount += 1;
     }
+    public void upLikeCount() {this.likeCount += 1;}
+    public void downLikeCount() {this.likeCount -= 1;}
 
 
 

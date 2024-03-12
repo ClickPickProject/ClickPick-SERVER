@@ -160,12 +160,14 @@ public class PostService {
                 if(postLikeResult.isPresent()){
                     PostLike postLike = postLikeResult.get();
                     postLikeRepository.delete(postLike);
+                    post.downLikeCount();
 
                     return ResponseEntity.status(HttpStatus.OK).body("좋아요를 취소하였습니다.");
                 }
                 else {
                     PostLike postLike = new PostLike(userResult.get(),postResult.get());
                     postLikeRepository.save(postLike);
+                    post.upLikeCount();
                     return ResponseEntity.status(HttpStatus.OK).body("해당 게시글을 좋아요 하였습니다.");
                 }
             }
