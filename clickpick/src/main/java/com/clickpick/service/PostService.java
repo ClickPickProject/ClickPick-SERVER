@@ -263,6 +263,16 @@ public class PostService {
         return ResponseEntity.status(HttpStatus.OK).body(map);
     }
 
+    /* 게시글 카테고리 정렬 */
+    public ResponseEntity findCategory(int page, String category){
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC,"createAt"));
+        PostCategory postCategory = PostCategory.valueOf(category);
+        Page<Post> pagingResult = postRepository.findCategory(postCategory, pageRequest);
+        Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post));
+
+        return ResponseEntity.status(HttpStatus.OK).body(map);
+    }
+
 
     public static boolean isEnumValue(String category) {
         try {

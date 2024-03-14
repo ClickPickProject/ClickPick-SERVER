@@ -84,26 +84,33 @@ public class PostController {
     /* 게시글 작성자의 닉네임 검색 */
     @GetMapping("/api/post/nickname")
     public ResponseEntity searchNickname(@RequestParam(required = false, defaultValue = "0", value = "page")int page, String nickname){
-        ResponseEntity responseEntity = postService.findUserNickname(page,nickname);
+        ResponseEntity responseEntity = postService.findUserNickname(page, nickname);
         return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
     }
 
     /* 게시글 내용 검색 */
     @GetMapping("/api/post/content")
     public ResponseEntity searchContent(@RequestParam(required = false, defaultValue = "0", value = "page")int page, String content){
-        ResponseEntity responseEntity = postService.findContent(page,content);
+        ResponseEntity responseEntity = postService.findContent(page, content);
         return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
     }
     /* 게시글 제목 검색 */
     @GetMapping("/api/post/title")
     public ResponseEntity searchTitle(@RequestParam(required = false, defaultValue = "0", value = "page")int page, String title){
-        ResponseEntity responseEntity = postService.findTitle(page,title);
+        ResponseEntity responseEntity = postService.findTitle(page, title);
         return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
     }
     /* 게시글 해시태그 검색 */
     @GetMapping("/api/post/hashtag")
     public ResponseEntity searchHashtag(@RequestParam(required = false, defaultValue = "0", value = "page")int page, String hashtag){
-        ResponseEntity responseEntity = postService.findHashtag(page,hashtag);
+        ResponseEntity responseEntity = postService.findHashtag(page, hashtag);
+        return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
+    }
+
+    /* 게시글 카테고리 정렬 */
+    @GetMapping("/api/post/category")
+    public ResponseEntity searchCategory(@RequestParam(required = false, defaultValue = "0", value = "page")int page, String category){
+        ResponseEntity responseEntity = postService.findCategory(page, category);
         return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
     }
 
