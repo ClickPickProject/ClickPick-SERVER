@@ -227,6 +227,42 @@ public class PostService {
         return ResponseEntity.status(HttpStatus.OK).body(viewPostListResList);
     }
 
+    /* 게시글 작성자의 닉네임 검색 */
+    public ResponseEntity findUserNickname(int page, String nickname){
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC,"createAt"));
+        Page<Post> pagingResult = postRepository.findNickname(nickname, pageRequest);
+        Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post));
+
+        return ResponseEntity.status(HttpStatus.OK).body(map);
+    }
+
+    /* 게시글 내용 검색 */
+    public ResponseEntity findContent(int page, String content){
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC,"createAt"));
+        Page<Post> pagingResult = postRepository.findContent(content, pageRequest);
+        Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post));
+
+        return ResponseEntity.status(HttpStatus.OK).body(map);
+    }
+
+    /* 게시글 제목 검색 */
+    public ResponseEntity findTitle(int page, String title){
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC,"createAt"));
+        Page<Post> pagingResult = postRepository.findTitle(title, pageRequest);
+        Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post));
+
+        return ResponseEntity.status(HttpStatus.OK).body(map);
+    }
+
+    /* 게시글 해시태그 검색 */
+    public ResponseEntity findHashtag(int page, String hashtag){
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC,"createAt"));
+        Page<Post> pagingResult = postRepository.findHashtag(hashtag, pageRequest);
+        Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post));
+
+        return ResponseEntity.status(HttpStatus.OK).body(map);
+    }
+
 
     public static boolean isEnumValue(String category) {
         try {
