@@ -1,7 +1,7 @@
 package com.clickpick.dto.post;
 
 
-import com.clickpick.domain.Hashtag;
+
 import com.clickpick.domain.Post;
 import com.clickpick.dto.comment.ViewCommentRes;
 import lombok.Data;
@@ -9,7 +9,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 @Data
 public class ViewPostRes {

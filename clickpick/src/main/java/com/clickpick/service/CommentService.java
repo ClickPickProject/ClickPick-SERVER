@@ -81,7 +81,6 @@ public class CommentService {
 
             Optional<Comment> commentResult = commentRepository.findById(commentId);
             if(commentResult.isPresent()){
-                Comment comment = commentResult.get();
                 Optional<CommentLike> commentLikeResult = commentLikeRepository.checkLikeComment(commentId, userId);
                 if(commentLikeResult.isPresent()){
                     CommentLike commentLike = commentLikeResult.get();
