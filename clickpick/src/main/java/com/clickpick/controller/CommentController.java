@@ -1,6 +1,7 @@
 package com.clickpick.controller;
 
 import com.clickpick.dto.comment.CreateCommentReq;
+import com.clickpick.dto.comment.CreateReCommentReq;
 import com.clickpick.service.CommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +44,14 @@ public class CommentController {
     public  ResponseEntity likeComment(@PathVariable("commentId")Long commentId){
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         ResponseEntity responseEntity = commentService.likeCount(userId,commentId);
+        return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
+    }
+
+    /* 대댓글 작성 */
+    @PostMapping("/api/member/recomment")
+    public ResponseEntity uploadReComment(@RequestBody @Valid CreateReCommentReq createReCommentReq){
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        ResponseEntity responseEntity = commentService.renewReComment(userId, createReCommentReq);
         return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
     }
 }

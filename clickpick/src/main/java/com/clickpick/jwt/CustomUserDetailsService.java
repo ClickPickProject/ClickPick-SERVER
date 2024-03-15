@@ -35,6 +35,8 @@ public class CustomUserDetailsService implements UserDetailsService {
             }
         }
 
-        return null;
+        //return null;
+        throw new UsernameNotFoundException("잘못된 아이디 또는 비밀번호 입니다.");
     }
+
 }

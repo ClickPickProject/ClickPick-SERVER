@@ -37,10 +37,18 @@ public class Comment {
     @OneToMany(mappedBy = "comment")
     private List<CommentLike> commentLikes = new ArrayList<>(); //좋아요 수
 
-    public Comment(Post post, User user, String content) { // 게시글 작성
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private Comment parent;
+
+    @OneToMany(mappedBy = "parent", orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
+
+    public Comment(Post post, User user, String content, Comment parent) { // 게시글 작성
         this.post = post;
         this.user = user;
         this.content = content;
+        this.parent = parent;
     }
 
     public void changeComment(String content){

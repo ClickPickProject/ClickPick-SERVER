@@ -2,6 +2,7 @@ package com.clickpick.service;
 
 import com.clickpick.domain.*;
 import com.clickpick.dto.comment.CreateCommentReq;
+import com.clickpick.dto.comment.CreateReCommentReq;
 import com.clickpick.repository.CommentLikeRepository;
 import com.clickpick.repository.CommentRepository;
 import com.clickpick.repository.PostRepository;
@@ -32,7 +33,7 @@ public class CommentService {
             Optional<Post> postResult = postRepository.findById(createCommentReq.getPostId());
             if(postResult.isPresent()){
                 Post post = postResult.get();
-                Comment comment = new Comment(post,user,createCommentReq.getContent());
+                Comment comment = new Comment(post,user,createCommentReq.getContent(),null);
                 commentRepository.save(comment);
                 return ResponseEntity.status(HttpStatus.OK).body("댓글이 등록되었습니다.");
             }
@@ -96,6 +97,31 @@ public class CommentService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("댓글을 찾을 수 없습니다.");
 
         }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("회원만 가능한 기능입니다.");
+    }
+
+    /* 대댓글 작성 */
+    public ResponseEntity renewReComment(String userId, CreateReCommentReq createReCommentReq) {
+        Optional<User> userResult = userRepository.findById(userId);
+        if(userResult.isPresent()){
+            User user = userResult.get();
+            Optional<Post> postResult = postRepository.findById(createReCommentReq.getPostId());
+            if(postResult.isPresent()){
+                Post post = postResult.get();
+                Optional<Comment> parentCommentResult = commentRepository.findById(createReCommentReq.getParentCommentId());
+                if(parentCommentResult.isPresent()){
+                    Comment parentComment = parentCommentResult.get();
+                    Comment comment = new Comment(post, user, createReCommentReq.getContent(), parentComment);
+                    commentRepository.save(comment);
+                    return ResponseEntity.status(HttpStatus.OK).body("댓글이 등록되었습니다.");
+                }
+
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("게시글을 찾을 수 없습니다.");
+            }
+
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("상위 댓글을 찾을 수 없습니다.");
+        }
+
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("회원만 가능한 기능입니다.");
     }
 }
