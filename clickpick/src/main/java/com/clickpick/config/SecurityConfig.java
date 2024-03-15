@@ -43,10 +43,11 @@ public class SecurityConfig {
                 //.headers((headers) -> headers.disable())
                 .formLogin((auth) -> auth.disable())
                 .httpBasic((auth) -> auth.disable())
-                .authorizeHttpRequests((auth) -> auth.requestMatchers("/api/signup/user").permitAll()
+                .authorizeHttpRequests((auth) -> auth.requestMatchers("/api/signup/**").permitAll()
                         .requestMatchers("/api/member/**").hasAnyAuthority("NORMAL","ADMIN")
                         .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
                         .anyRequest().permitAll())
+
                 .exceptionHandling((exception) -> exception.accessDeniedHandler(customAccessDeniedHandler).authenticationEntryPoint(customAuthenticationEntryPoint))
                 .addFilterBefore(new JWTFilter(jwtUtil),LoginFilter.class)
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class) // 세션을 stateless 상태로 유지

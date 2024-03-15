@@ -25,4 +25,11 @@ public class Notice {
     @CreationTimestamp
     @Column(nullable = false)
     private LocalDateTime createdAt;
+
+
+    public Notice(Admin admin, String title, String content) {
+        this.admin = admin;
+        this.title = title;
+        this.content = content;
+    }
 }
