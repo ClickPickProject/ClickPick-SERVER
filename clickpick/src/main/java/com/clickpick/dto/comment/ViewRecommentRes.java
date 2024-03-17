@@ -6,11 +6,9 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
-public class ViewCommentRes {
+public class ViewRecommentRes {
     @NotNull
     private Long commentId;
     @NotBlank
@@ -22,19 +20,13 @@ public class ViewCommentRes {
     @NotNull
     private Long likeCount;
     private boolean likeCommentCheck;
-    private List<ViewRecommentRes> recommentList = new ArrayList<>();
 
-    public ViewCommentRes(Comment comment, boolean likeCommentCheck) {
+    public ViewRecommentRes(Comment comment, boolean likeCommentCheck) {
         this.commentId = comment.getId();
         this.nickname = comment.getUser().getNickname();
         this.content = comment.getContent();
         this.createAt = comment.getCreateAt();
         this.likeCount = (long) comment.getCommentLikes().size();
         this.likeCommentCheck = likeCommentCheck;
-    }
-
-    public void addRecomment(ViewRecommentRes viewRecommentRes){
-        recommentList.add(viewRecommentRes);
-
     }
 }

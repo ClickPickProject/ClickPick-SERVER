@@ -41,7 +41,7 @@ public class CommentService {
 
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("존재하지 않는 게시글입니다.");
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("존재하지 않는 이메일(아이디)입니다.");
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("회원만 가능한 기능입니다.");
     }
 
 
@@ -116,7 +116,7 @@ public class CommentService {
                     return ResponseEntity.status(HttpStatus.OK).body("댓글이 등록되었습니다.");
                 }
 
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("게시글을 찾을 수 없습니다.");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("존재하지 않는 게시글 입니다.");
             }
 
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("상위 댓글을 찾을 수 없습니다.");

@@ -34,7 +34,7 @@ public class Comment {
     @Column(nullable = false)
     private LocalDateTime createAt;
 
-    @OneToMany(mappedBy = "comment")
+    @OneToMany(mappedBy = "comment",cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<CommentLike> commentLikes = new ArrayList<>(); //좋아요 수
 
     @ManyToOne(fetch = FetchType.LAZY)

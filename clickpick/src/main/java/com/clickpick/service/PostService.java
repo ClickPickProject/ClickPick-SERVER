@@ -2,6 +2,7 @@ package com.clickpick.service;
 
 import com.clickpick.domain.*;
 import com.clickpick.dto.comment.ViewCommentRes;
+import com.clickpick.dto.comment.ViewRecommentRes;
 import com.clickpick.dto.post.CreatePostReq;
 import com.clickpick.dto.post.UpdatePostReq;
 import com.clickpick.dto.post.ViewPostListRes;
@@ -149,8 +150,25 @@ public class PostService {
                             likeCommentCheck = true;
                         }
                     }
-                    ViewCommentRes viewCommentRes = new ViewCommentRes(comment,likeCommentCheck);
-                    viewCommentResList.add(viewCommentRes);
+                    if(comment.getParent() == null){
+                        ViewCommentRes viewCommentRes = new ViewCommentRes(comment,likeCommentCheck);
+                        if(comment.getComments().size() > 0){ //해당 댓글의 대댓글이 있으면
+                            for(Comment recomment : comment.getComments()){
+                                boolean likeRecommentCheck = false;
+                                Optional<CommentLike> recommentLikeResult = commentLikeRepository.checkLikeComment(recomment.getId(), userId);
+                                System.out.println("recommentLikeResult = " + recommentLikeResult);
+                                if(recommentLikeResult.isPresent()){
+                                    likeRecommentCheck = true;
+                                }
+                                ViewRecommentRes viewRecommentRes = new ViewRecommentRes(recomment, likeRecommentCheck);
+                                viewCommentRes.addRecomment(viewRecommentRes);
+                            }
+
+                        }
+                        viewCommentResList.add(viewCommentRes);
+                    }
+
+
                 }
 
                 viewPostRes.addComment(viewCommentResList);
@@ -195,7 +213,7 @@ public class PostService {
 
     /* 게시글 전체 리스트 조회 */
     public ResponseEntity listPost(int page) {
-        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC,"createAt"));
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC,"createAt"));
         Page<Post> pagingResult = postRepository.findAll(pageRequest);
         Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post));
 
@@ -205,7 +223,7 @@ public class PostService {
 
     /* 자신이 작성한 게시글 리스트 조회 */
     public ResponseEntity myListPost(int page, String userId){
-        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC,"createAt"));
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC,"createAt"));
         Page<Post> pagingResult = postRepository.findUserId(userId, pageRequest);
         Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post));
 
@@ -238,7 +256,7 @@ public class PostService {
 
     /* 게시글 내용 검색 */
     public ResponseEntity findContent(int page, String content){
-        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC,"createAt"));
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC,"createAt"));
         Page<Post> pagingResult = postRepository.findContent(content, pageRequest);
         Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post));
 
@@ -247,7 +265,7 @@ public class PostService {
 
     /* 게시글 제목 검색 */
     public ResponseEntity findTitle(int page, String title){
-        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC,"createAt"));
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC,"createAt"));
         Page<Post> pagingResult = postRepository.findTitle(title, pageRequest);
         Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post));
 
@@ -256,7 +274,7 @@ public class PostService {
 
     /* 게시글 해시태그 검색 */
     public ResponseEntity findHashtag(int page, String hashtag){
-        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC,"createAt"));
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC,"createAt"));
         Page<Post> pagingResult = postRepository.findHashtag(hashtag, pageRequest);
         Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post));
 
@@ -265,7 +283,7 @@ public class PostService {
 
     /* 게시글 카테고리 정렬 */
     public ResponseEntity findCategory(int page, String category){
-        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC,"createAt"));
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC,"createAt"));
         if(isEnumValue(category)){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("존재하지 않는 카테고리 입니다.");
         }
