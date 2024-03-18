@@ -56,5 +56,15 @@ public class User {
 
     }
 
+    // 닉네임 변경 시 사용 함수
+    public void updateNickname(String nickname){
+        this.nickname = nickname;
+    }
+
+    // 전화번호 변경 시 사용 함수
+    public void updatePhone(String phone){
+        this.phone = phone;
+    }
+
 
 }

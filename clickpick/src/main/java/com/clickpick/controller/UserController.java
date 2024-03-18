@@ -5,7 +5,10 @@ import com.clickpick.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -79,4 +82,37 @@ public class UserController {
         return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
     }
 
+    /* 개인정보확인 */
+    @GetMapping("/api/member/userinfo")
+    public ResponseEntity viewUserInfo(){
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        ResponseEntity responseEntity = userService.checkUserInfo(userId);
+        return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
+    }
+
+    /* 닉네임 변경 */
+    @GetMapping("/api/member/new-nickname/{nickname}")
+    public ResponseEntity changeNickname(@PathVariable("nickname") String nickname){
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        ResponseEntity responseEntity = userService.updateNewNickname(userId, nickname);
+        return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
+    }
+
+    /* 전화번호 변경 */
+    @GetMapping("/api/member/new-phone-number/{phone-number}")
+    public ResponseEntity changePhoneNumber(@PathVariable("phone-number") String phoneNumber){
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        ResponseEntity responseEntity = userService.updateNewPhoneNumber(userId, phoneNumber);
+        return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
+    }
+
+    /* 회원 탈퇴 */
+    @DeleteMapping("/api/member")
+    public ResponseEntity leaveUser(){
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        ResponseEntity responseEntity = userService.deleteUser(userId);
+        return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
+    }
+
+    /**/
 }
