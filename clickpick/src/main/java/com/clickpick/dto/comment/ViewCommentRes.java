@@ -22,7 +22,9 @@ public class ViewCommentRes {
     @NotNull
     private Long likeCount;
     private boolean likeCommentCheck;
+    private String commentStatus;
     private List<ViewRecommentRes> recommentList = new ArrayList<>();
+
 
     public ViewCommentRes(Comment comment, boolean likeCommentCheck) {
         this.commentId = comment.getId();
@@ -31,6 +33,7 @@ public class ViewCommentRes {
         this.createAt = comment.getCreateAt();
         this.likeCount = (long) comment.getCommentLikes().size();
         this.likeCommentCheck = likeCommentCheck;
+        this.commentStatus = String.valueOf(comment.getStatus());
     }
 
     public void addRecomment(ViewRecommentRes viewRecommentRes){

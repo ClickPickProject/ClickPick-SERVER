@@ -7,6 +7,7 @@ import com.clickpick.repository.CommentLikeRepository;
 import com.clickpick.repository.CommentRepository;
 import com.clickpick.repository.PostRepository;
 import com.clickpick.repository.UserRepository;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,8 +53,22 @@ public class CommentService {
         Optional<Comment> result = commentRepository.findUserComment(commentId, userId);
 
         if(result.isPresent()){
-            commentRepository.delete(result.get());
-            return ResponseEntity.status(HttpStatus.OK).body("삭제가 완료되었습니다.");
+            if(result.get().getParent()!=null){ // 대댓글을 삭제한 경우
+                commentRepository.delete(result.get());
+                if(result.get().getParent().getStatus() == CommentStatus.DELETE && result.get().getParent().getComments().size() -1 == 0){ // 해당 대댓글 삭제 시 관련된 모든 댓글 삭제된 경우 -1은 DB반영이 해당 함수가 끝나야 적용되므로 -1을 하며 미리 적용된것으로 함
+                    commentRepository.delete(result.get().getParent());
+                    return ResponseEntity.status(HttpStatus.OK).body("삭제가 완료되었습니다.");
+                }
+                return ResponseEntity.status(HttpStatus.OK).body("삭제가 완료되었습니다.");
+            }
+            else if(result.get().getParent() == null && result.get().getComments().size() == 0){ // 댓글이면서 대댓글이 없는 경우
+                commentRepository.delete(result.get());
+                return ResponseEntity.status(HttpStatus.OK).body("삭제가 완료되었습니다.");
+            }
+            else { // 댓글이면서 대댓글이 있는 경우
+                result.get().tempDelete();
+                return ResponseEntity.status(HttpStatus.OK).body("삭제가 완료되었습니다.");
+            }
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("사용자가 삭제할 수 없는 댓글입니다.");
 
