@@ -1,6 +1,5 @@
 package com.clickpick.jwt;
 
-import com.clickpick.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

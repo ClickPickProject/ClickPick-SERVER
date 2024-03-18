@@ -1,6 +1,8 @@
 package com.clickpick.service;
 
 import com.clickpick.domain.*;
+import com.clickpick.dto.comment.ViewCommentRes;
+import com.clickpick.dto.comment.ViewRecommentRes;
 import com.clickpick.dto.post.CreatePostReq;
 import com.clickpick.dto.post.UpdatePostReq;
 import com.clickpick.dto.post.ViewPostListRes;
@@ -28,12 +30,13 @@ public class PostService {
     private final PostRepository postRepository;
     private final HashtagRepository hashtagRepository;
     private final PostLikeRepository postLikeRepository;
-
+    private final CommentRepository commentRepository;
+    private final CommentLikeRepository commentLikeRepository;
 
     /* 게시글 작성 */
     @Transactional
     public ResponseEntity createPost(String userId, CreatePostReq createPostReq) {
-        Optional<User> result = userRepository.findById(userId); //로그인 시 이용가능이므로 체크 안함
+        Optional<User> result = userRepository.findById(userId);
         if(isEnumValue(createPostReq.getPostCategory())){
             return ResponseEntity.status(HttpStatus.CONFLICT).body("존재하지 않는 카테고리 입니다.");
         }
@@ -51,7 +54,7 @@ public class PostService {
 
             return ResponseEntity.status(HttpStatus.OK).body("게시글이 등록되었습니다.");
         }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("존재하지 않는 이메일(아이디) 입니다.");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("존재하지 않는 이메일(아이디)입니다.");
 
 
 
@@ -79,10 +82,7 @@ public class PostService {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("존재하지 않는카테고리입니다.");
         }
         if(result.isPresent()){
-            /* 게시글 중 제목, 내용, 위치 변경 */
-            //Optional<User> userResult = userRepository.findById(userId);
             Post post = result.get();
-            //User user = userResult.get();
             post.changePost(updatePostReq.getTitle(), updatePostReq.getContent(), updatePostReq.getPosition(), updatePostReq.getPostCategory());
 
             /* 게시글 중 해시 태그 수정 */
@@ -117,18 +117,63 @@ public class PostService {
 
     /* 게시글 상세 조회 */
     @Transactional
-    public ResponseEntity selectPost(Long postId) {
+    public ResponseEntity selectPost(String userId, Long postId) {
         Optional<Post> postResult = postRepository.findById(postId);
         if(postResult.isPresent()){
             Post post = postResult.get();
+            boolean likePostCheck = false;
             post.upViewCount(); //조회수 증가 ->@Transaction 필요
-            ViewPostRes viewPostRes = new ViewPostRes(post.getUser().getNickname(), postLikeRepository.countByPostId(postId), post);
+            if(userId != null || userId.equals("anonymousUser")){ // 게시글 좋아요 확인 로직
+                Optional<PostLike> postLikeResult = postLikeRepository.checkLikePost(postId, userId);
+                if(postLikeResult.isPresent()){
+                    likePostCheck = true;
+                }
+            }
+
+            ViewPostRes viewPostRes = new ViewPostRes(post.getUser().getNickname(), post, likePostCheck);
 
             if(post.getHashtags().size()>0){
                 for(Hashtag hashtag : post.getHashtags()){
                     viewPostRes.addHashtag(hashtag.getContent());
                 }
             }
+
+            /* 댓글 조회 */
+            Optional<List<Comment>> commentResult = commentRepository.findByPostId(postId);
+            List<ViewCommentRes> viewCommentResList = new ArrayList<>();
+            boolean likeCommentCheck = false;
+            if(commentResult.isPresent()){
+                for(Comment comment : commentResult.get()){
+                    if(userId != null || userId.equals("anonymousUser")){ // 댓글 좋아요 확인 로직
+                        Optional<CommentLike> commentLikeResult = commentLikeRepository.checkLikeComment(comment.getId(), userId);
+                        if(commentLikeResult.isPresent()){
+                            likeCommentCheck = true;
+                        }
+                    }
+                    if(comment.getParent() == null){
+                        ViewCommentRes viewCommentRes = new ViewCommentRes(comment,likeCommentCheck);
+                        if(comment.getComments().size() > 0){ //해당 댓글의 대댓글이 있으면
+                            for(Comment recomment : comment.getComments()){
+                                boolean likeRecommentCheck = false;
+                                Optional<CommentLike> recommentLikeResult = commentLikeRepository.checkLikeComment(recomment.getId(), userId);
+                                System.out.println("recommentLikeResult = " + recommentLikeResult);
+                                if(recommentLikeResult.isPresent()){
+                                    likeRecommentCheck = true;
+                                }
+                                ViewRecommentRes viewRecommentRes = new ViewRecommentRes(recomment, likeRecommentCheck);
+                                viewCommentRes.addRecomment(viewRecommentRes);
+                            }
+
+                        }
+                        viewCommentResList.add(viewCommentRes);
+                    }
+
+
+                }
+
+                viewPostRes.addComment(viewCommentResList);
+            }
+
 
             return ResponseEntity.status(HttpStatus.OK).body(viewPostRes);
         }
@@ -155,8 +200,8 @@ public class PostService {
                 }
                 else {
                     PostLike postLike = new PostLike(userResult.get(),postResult.get());
-                    post.upLikeCount();
                     postLikeRepository.save(postLike);
+                    post.upLikeCount();
                     return ResponseEntity.status(HttpStatus.OK).body("해당 게시글을 좋아요 하였습니다.");
                 }
             }
@@ -168,7 +213,7 @@ public class PostService {
 
     /* 게시글 전체 리스트 조회 */
     public ResponseEntity listPost(int page) {
-        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC,"createAt"));
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC,"createAt"));
         Page<Post> pagingResult = postRepository.findAll(pageRequest);
         Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post));
 
@@ -178,7 +223,7 @@ public class PostService {
 
     /* 자신이 작성한 게시글 리스트 조회 */
     public ResponseEntity myListPost(int page, String userId){
-        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC,"createAt"));
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC,"createAt"));
         Page<Post> pagingResult = postRepository.findUserId(userId, pageRequest);
         Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post));
 
@@ -198,6 +243,55 @@ public class PostService {
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(viewPostListResList);
+    }
+
+    /* 게시글 작성자의 닉네임 검색 */
+    public ResponseEntity findUserNickname(int page, String nickname){
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.ASC,"createAt"));
+        Page<Post> pagingResult = postRepository.findNickname(nickname, pageRequest);
+        Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post));
+
+        return ResponseEntity.status(HttpStatus.OK).body(map);
+    }
+
+    /* 게시글 내용 검색 */
+    public ResponseEntity findContent(int page, String content){
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC,"createAt"));
+        Page<Post> pagingResult = postRepository.findContent(content, pageRequest);
+        Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post));
+
+        return ResponseEntity.status(HttpStatus.OK).body(map);
+    }
+
+    /* 게시글 제목 검색 */
+    public ResponseEntity findTitle(int page, String title){
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC,"createAt"));
+        Page<Post> pagingResult = postRepository.findTitle(title, pageRequest);
+        Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post));
+
+        return ResponseEntity.status(HttpStatus.OK).body(map);
+    }
+
+    /* 게시글 해시태그 검색 */
+    public ResponseEntity findHashtag(int page, String hashtag){
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC,"createAt"));
+        Page<Post> pagingResult = postRepository.findHashtag(hashtag, pageRequest);
+        Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post));
+
+        return ResponseEntity.status(HttpStatus.OK).body(map);
+    }
+
+    /* 게시글 카테고리 정렬 */
+    public ResponseEntity findCategory(int page, String category){
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC,"createAt"));
+        if(isEnumValue(category)){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("존재하지 않는 카테고리 입니다.");
+        }
+        PostCategory postCategory = PostCategory.valueOf(category);
+        Page<Post> pagingResult = postRepository.findCategory(postCategory, pageRequest);
+        Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post));
+
+        return ResponseEntity.status(HttpStatus.OK).body(map);
     }
 
 

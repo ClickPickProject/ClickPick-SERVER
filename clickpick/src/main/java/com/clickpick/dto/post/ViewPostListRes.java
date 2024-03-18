@@ -26,10 +26,10 @@ public class ViewPostListRes {
         this.title = post.getTitle();
         this.createAt = post.getCreateAt();
         this.viewCount = post.getViewCount();
-        this.likeCount = post.getLikeCount();
+        this.likeCount = (long) post.getPostLikes().size();
         this.hashtags = post.getHashtags().stream().map(Hashtag::getContent).collect(Collectors.toList());
         this.postCategory = post.getPostCategory().toString();
-        this.commentCount = post.getCommentCount();
+        this.commentCount = (long) post.getComments().size();
     }
 
 

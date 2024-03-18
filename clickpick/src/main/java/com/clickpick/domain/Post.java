@@ -30,14 +30,14 @@ public class Post {
     @Column(nullable = false)
     private LocalDateTime createAt;
     private String position;
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50000)
     private String content;
     @Column(nullable = false)
     private String title;
     @Column(name = "view_count",nullable = false)
     @ColumnDefault("0")
     private Long viewCount;
-    @Column(name = "like_count",nullable = false)
+    @Column(name = "like_count",nullable = false) //베스트 게시물 조회 시 필요
     @ColumnDefault("0")
     private Long likeCount;
     @Column(name = "photo_date")
@@ -46,13 +46,12 @@ public class Post {
     @Enumerated(EnumType.STRING)
     @ColumnDefault("'자유'")
     private PostCategory postCategory;
-    @Column(name = "comment_count",nullable = false)
-    @ColumnDefault("0")
-    private Long commentCount; // 댓글 수
     @OneToMany(mappedBy = "post",cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Hashtag> hashtags = new ArrayList<>(); //
     @OneToMany(mappedBy = "post",cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<PostLike> postLikes = new ArrayList<>();
+    @OneToMany(mappedBy = "post",cascade = CascadeType.REMOVE,orphanRemoval = true)
+    private List<Comment> comments = new ArrayList<>();
 
 
     // 이미지 넣어야함
@@ -66,30 +65,19 @@ public class Post {
         this.postCategory = PostCategory.valueOf(category);
     }
 
-    public void changePost(String title, String content, String position, String catogory){
+    public void changePost(String title, String content, String position, String category){
         this.title = title;
         this.content = content;
         this.position = position;
-        this.postCategory = PostCategory.valueOf(catogory);
+        this.postCategory = PostCategory.valueOf(category);
     }
 
     public void upViewCount(){
         this.viewCount += 1;
     }
-    public void upLikeCount(){
-        this.likeCount += 1;
-    }
-    public void downLikeCount(){ this.likeCount -= 1; }
+    public void upLikeCount() {this.likeCount += 1;}
+    public void downLikeCount() {this.likeCount -= 1;}
 
-    public void updateHashtag(String hashtag){
-        //this.hashtags = hashtag;
-    }
-
-    public void addHashtag(String hashtag){
-        Hashtag hashtags = new Hashtag(this,hashtag);
-        this.hashtags.add(hashtags);
-        hashtags.addPost(this);
-    }
 
 
 }
