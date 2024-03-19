@@ -19,12 +19,14 @@ public class AdminController {
 
     private final AdminService adminService;
 
-
     /* 매니저 회원 가입*/
     @PostMapping("/api/signup/admin")
     public ResponseEntity singUpAdmin(@RequestBody @Valid SingUpAdminReq singUpAdminReq){
         ResponseEntity responseEntity = adminService.join(singUpAdminReq);
         return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
     }
+
+
+
 
 }
