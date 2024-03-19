@@ -1,6 +1,8 @@
 package com.clickpick.controller;
 
 import com.clickpick.dto.user.*;
+import com.clickpick.service.CommentService;
+import com.clickpick.service.PostService;
 import com.clickpick.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+    private final PostService postService;
 
     /* 유저 회원 가입*/
     @PostMapping("/api/signup/user")
@@ -115,4 +118,36 @@ public class UserController {
     }
 
     /**/
+
+    /* 작성한 게시글 리스트 조회 */
+    @GetMapping("/api/member/post/list")
+    public ResponseEntity viewMyPostList(@RequestParam(required = false, defaultValue = "0", value = "page")int page){
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        ResponseEntity responseEntity = postService.myPostList(page,userId);
+        return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
+    }
+
+    /* 작성한 댓글 리스트 조회 */
+    @GetMapping("/api/member/comment/list")
+    public ResponseEntity viewMyCommentList(@RequestParam(required = false,defaultValue = "0", value = "page")int page){
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        ResponseEntity responseEntity = postService.myCommentList(page,userId);
+        return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
+    }
+
+    /* 좋아요 한 게시글 확인 */
+    @GetMapping("/api/member/liked/post/list")
+    public ResponseEntity viewMyLikePostList(@RequestParam(required = false,defaultValue = "0", value = "page")int page){
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        ResponseEntity responseEntity = postService.myLikePostList(page,userId);
+        return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
+    }
+
+    /* 좋아요 한 댓글 확인 */
+    @GetMapping("/api/member/liked/comment/list")
+    public ResponseEntity viewMyLikeCommentList(@RequestParam(required = false,defaultValue = "0", value = "page")int page){
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        ResponseEntity responseEntity = postService.myLikeCommentList(page,userId);
+        return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
+    }
 }

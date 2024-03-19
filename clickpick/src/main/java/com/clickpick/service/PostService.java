@@ -222,9 +222,36 @@ public class PostService {
     }
 
     /* 자신이 작성한 게시글 리스트 조회 */
-    public ResponseEntity myListPost(int page, String userId){
+    public ResponseEntity myPostList(int page, String userId){
         PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC,"createAt"));
         Page<Post> pagingResult = postRepository.findUserId(userId, pageRequest);
+        Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post));
+
+        return ResponseEntity.status(HttpStatus.OK).body(map);
+    }
+
+    /* 좋아요 한 게시글 리스트 조회*/
+    public ResponseEntity myLikePostList(int page, String userId) {
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC,"createAt"));
+        Page<Post> pagingResult = postRepository.findLikePost(userId, pageRequest);
+        Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post));
+
+        return ResponseEntity.status(HttpStatus.OK).body(map);
+    }
+
+    /* 댓글을 단 게시글 리스트 조회 */
+    public ResponseEntity myCommentList(int page, String userId) {
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC,"createAt"));
+        Page<Post> pagingResult = postRepository.findCommentUserId(userId, pageRequest);
+        Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post));
+
+        return ResponseEntity.status(HttpStatus.OK).body(map);
+    }
+
+    /* 좋아요 한 댓글이 달린 게시글 리스트 조회 */
+    public ResponseEntity myLikeCommentList(int page, String userId) {
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC,"createAt"));
+        Page<Post> pagingResult = postRepository.findLikeComment(userId, pageRequest);
         Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post));
 
         return ResponseEntity.status(HttpStatus.OK).body(map);
@@ -294,7 +321,6 @@ public class PostService {
         return ResponseEntity.status(HttpStatus.OK).body(map);
     }
 
-
     public static boolean isEnumValue(String category) {
         try {
             // Enum.valueOf() 메서드를 사용하여 입력값이 Enum 타입에 속하는지 확인
@@ -304,4 +330,6 @@ public class PostService {
             return true; // 속하지 않는다면 true 반환
         }
     }
+
+
 }
