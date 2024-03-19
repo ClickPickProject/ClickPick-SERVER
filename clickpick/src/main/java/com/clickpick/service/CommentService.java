@@ -155,7 +155,7 @@ public class CommentService {
                 reportCommentRepository.save(reportComment); //중복 신고 체크 해야함
                 return ResponseEntity.status(HttpStatus.OK).body("신고를 완료하였습니다.");
             }
-            return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("게시글과 작성자가 올바르지 않습니다.");
+            return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("댓글과 작성자가 올바르지 않습니다.");
         }
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("회원만 사용 가능한 기능입니다.");
