@@ -17,8 +17,12 @@ public class ReportPost {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id",nullable = false)
-    private User user;
+    @JoinColumn(name = "report_user_id",nullable = false)
+    private User reportUser;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reported_user_id",nullable = false)
+    private User reportedUser;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id",nullable = false)
@@ -30,4 +34,11 @@ public class ReportPost {
 
     @Column(nullable = false)
     private String reason;
+
+    public ReportPost(User reportUser, User reportedUser, Post post, String reason) {
+        this.reportUser = reportUser;
+        this.reportedUser = reportedUser;
+        this.post = post;
+        this.reason = reason;
+    }
 }

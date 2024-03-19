@@ -1,7 +1,8 @@
 package com.clickpick.controller;
 
+import com.clickpick.dto.comment.ReportCommentReq;
+import com.clickpick.dto.post.ReportPostReq;
 import com.clickpick.dto.user.*;
-import com.clickpick.service.CommentService;
 import com.clickpick.service.PostService;
 import com.clickpick.service.UserService;
 import jakarta.validation.Valid;
@@ -150,4 +151,5 @@ public class UserController {
         ResponseEntity responseEntity = postService.myLikeCommentList(page,userId);
         return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
     }
+
 }

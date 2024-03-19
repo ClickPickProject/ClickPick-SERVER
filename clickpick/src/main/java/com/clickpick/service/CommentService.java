@@ -3,10 +3,8 @@ package com.clickpick.service;
 import com.clickpick.domain.*;
 import com.clickpick.dto.comment.CreateCommentReq;
 import com.clickpick.dto.comment.CreateReCommentReq;
-import com.clickpick.repository.CommentLikeRepository;
-import com.clickpick.repository.CommentRepository;
-import com.clickpick.repository.PostRepository;
-import com.clickpick.repository.UserRepository;
+import com.clickpick.dto.comment.ReportCommentReq;
+import com.clickpick.repository.*;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,6 +22,7 @@ public class CommentService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final CommentLikeRepository commentLikeRepository;
+    private final ReportCommentRepository reportCommentRepository;
 
     /* 댓글 작성 */
     @Transactional
@@ -138,5 +137,27 @@ public class CommentService {
         }
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("회원만 가능한 기능입니다.");
+    }
+
+    /* 댓글 신고 */
+    @Transactional
+    public ResponseEntity complainComment(String userId, ReportCommentReq reportCommentReq) {
+        Optional<User> userResult = userRepository.findById(userId);
+        if(userResult.isPresent()){
+            Optional<ReportComment> reportCommentResult = reportCommentRepository.findReportComment(reportCommentReq.getReportedUserNickname(), reportCommentReq.getCommentId());
+            if(reportCommentResult.isPresent()){
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 처리된 신고입니다.");
+            }
+            Optional<User> reportedUserResult = userRepository.findByNickname(reportCommentReq.getReportedUserNickname());
+            Optional<Comment> userCommentResult = commentRepository.findUserComment(reportCommentReq.getCommentId(), reportedUserResult.get().getId());
+            if(userCommentResult.isPresent()){
+                ReportComment reportComment = new ReportComment(userCommentResult.get(),userResult.get(),reportedUserResult.get(), reportCommentReq.getReason());
+                reportCommentRepository.save(reportComment); //중복 신고 체크 해야함
+                return ResponseEntity.status(HttpStatus.OK).body("신고를 완료하였습니다.");
+            }
+            return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("게시글과 작성자가 올바르지 않습니다.");
+        }
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("회원만 사용 가능한 기능입니다.");
     }
 }

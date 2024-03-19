@@ -3,10 +3,7 @@ package com.clickpick.service;
 import com.clickpick.domain.*;
 import com.clickpick.dto.comment.ViewCommentRes;
 import com.clickpick.dto.comment.ViewRecommentRes;
-import com.clickpick.dto.post.CreatePostReq;
-import com.clickpick.dto.post.UpdatePostReq;
-import com.clickpick.dto.post.ViewPostListRes;
-import com.clickpick.dto.post.ViewPostRes;
+import com.clickpick.dto.post.*;
 import com.clickpick.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,6 +29,7 @@ public class PostService {
     private final PostLikeRepository postLikeRepository;
     private final CommentRepository commentRepository;
     private final CommentLikeRepository commentLikeRepository;
+    private final ReportPostRepository reportPostRepository;
 
     /* 게시글 작성 */
     @Transactional
@@ -319,6 +317,30 @@ public class PostService {
         Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post));
 
         return ResponseEntity.status(HttpStatus.OK).body(map);
+    }
+
+
+    /* 게시글 신고 */
+    @Transactional
+    public ResponseEntity complainPost(String userId, ReportPostReq reportPostReq) {
+        Optional<User> userResult = userRepository.findById(userId);
+        if(userResult.isPresent()){
+            Optional<ReportPost> reportPostResult = reportPostRepository.findReportPost(reportPostReq.getReportedUserNickname(), reportPostReq.getPostId());
+            if(reportPostResult.isPresent()){
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 처리된 신고입니다.");
+            }
+            Optional<User> reportedUserResult = userRepository.findByNickname(reportPostReq.getReportedUserNickname());
+            Optional<Post> userPostResult = postRepository.findUserPost(reportPostReq.getPostId(), reportedUserResult.get().getId());
+            if(userPostResult.isPresent()){
+
+                ReportPost reportPost = new ReportPost(userResult.get(),reportedUserResult.get(),userPostResult.get(),reportPostReq.getReason());
+                reportPostRepository.save(reportPost);
+                return ResponseEntity.status(HttpStatus.OK).body("신고를 완료하였습니다.");
+            }
+            return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("게시글과 작성자가 올바르지 않습니다.");
+        }
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("회원만 사용 가능한 기능입니다.");
     }
 
     public static boolean isEnumValue(String category) {

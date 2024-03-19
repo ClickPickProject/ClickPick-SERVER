@@ -1,37 +1,28 @@
 package com.clickpick.service;
 
 import com.clickpick.config.RedisUtil;
-import com.clickpick.domain.User;
+import com.clickpick.domain.*;
 import com.clickpick.dto.user.*;
-import com.clickpick.repository.UserRepository;
+import com.clickpick.repository.*;
 import com.google.gson.JsonObject;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final MailService mailService;
     private final RedisUtil redisUtil;
-
-    @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder,MailService mailService, RedisUtil redisUtil) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.mailService = mailService;
-        this.redisUtil = redisUtil;
-    }
-
 
 
     /* 회원 가입 */
@@ -234,6 +225,4 @@ public class UserService {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("회원만 사용 가능한 기능입니다.");
     }
 
-
-    /**/
 }
