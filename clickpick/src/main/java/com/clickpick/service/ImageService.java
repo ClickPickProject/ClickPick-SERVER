@@ -6,17 +6,20 @@ import com.clickpick.repository.PostImageRepository;
 import com.clickpick.repository.PostRepository;
 import com.clickpick.repository.ProfileImageRepository;
 import com.clickpick.repository.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -78,6 +81,52 @@ public class ImageService {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("회원만 사용 가능한 기능입니다.");
     }
 
+    /* 프로필 사진 조회 */
+    public ResponseEntity<?> myProfile(String userId) {
+        Optional<User> userResult = userRepository.findById(userId);
+        if(userResult.isPresent()){
+            Optional<ProfileImage> profileResult = profileImageRepository.findUserId(userId);
+            if(profileResult.isPresent()){ // 프로필이 있는 경우
+                ProfileImage profileImage = profileResult.get();
+                String ImagePath = profileImage.getFilePath() + "/" + profileImage.getFileName();
+                byte[] fileArray = getImage(ImagePath);
+                return ResponseEntity.status(HttpStatus.OK).body(fileArray);
+
+            }
+            else{ // 프로필이 없는 경우
+                String imagePath = uploadPath + "/profile/default.png";
+                byte[] fileArray = getImage(imagePath);
+                return ResponseEntity.status(HttpStatus.OK).body(fileArray);
+            }
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("회원만 사용 가능한 기능입니다.");
+    }
+
+    private static byte[] getImage(String ImagePath) {
+        InputStream in = null;
+        try{
+            in = new FileInputStream(ImagePath);
+        } catch (FileNotFoundException e) {
+            e.getStackTrace();
+        }
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        int readCount = 0;
+        byte[] buffer = new byte[1024];
+        byte[] fileArray = null;
+
+        try{
+            while((readCount = in.read(buffer)) != -1){
+                out.write(buffer, 0, readCount);
+            }
+            fileArray = out.toByteArray();
+            in.close();
+            out.close();
+        } catch(IOException e){
+            throw new RuntimeException("이미지가 없습니다.");
+        }
+        return fileArray;
+    }
 
 
     private void uploadProfileImage(MultipartFile file, User user) throws IOException {
