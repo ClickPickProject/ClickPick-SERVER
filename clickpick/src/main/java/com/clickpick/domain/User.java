@@ -32,8 +32,9 @@ public class User {
     @Enumerated(EnumType.STRING)
     @ColumnDefault("'NORMAL'")
     private UserStatus status;
+    @OneToOne(mappedBy = "user")
+    private ProfileImage profileImage;
 
-    // 이미지 변수 (프로필 사진)
 
 
     public User(String id, String password, String name, String nickname, String phone) {

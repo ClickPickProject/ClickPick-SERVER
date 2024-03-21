@@ -42,7 +42,6 @@ public class PostService {
             User user = result.get();
             Post post = new Post(user,createPostReq.getPosition(),createPostReq.getContent(),createPostReq.getTitle(),createPostReq.getPostCategory());
             postRepository.save(post);
-            System.out.println("createPostReq = " + createPostReq.getHashtags());
             if(createPostReq.getHashtags() != null){
                 for (String hashtag : createPostReq.getHashtags()) {
                     Hashtag addHashtag = new Hashtag(post,hashtag);
