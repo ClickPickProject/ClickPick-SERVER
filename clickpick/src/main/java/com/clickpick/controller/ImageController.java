@@ -3,6 +3,10 @@ package com.clickpick.controller;
 import com.clickpick.service.ImageService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,6 +14,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,11 +41,11 @@ public class ImageController {
         return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
     }
 
-    /* 프로필 사진 조회 */
-    @GetMapping(value = "api/member/profileimage", produces={MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<?> viewProfile(){
+    /* 프로필 사진 조회 */ //보여줄땐?
+    @GetMapping(value = "api/member/profileimage")
+    public ResponseEntity viewProfile(){
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
-        ResponseEntity<?> responseEntity = imageService.myProfile(userId);
+        ResponseEntity responseEntity = imageService.myProfile(userId);
         return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
     }
 

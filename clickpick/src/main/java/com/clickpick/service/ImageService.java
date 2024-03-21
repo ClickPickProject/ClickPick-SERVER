@@ -6,12 +6,9 @@ import com.clickpick.repository.PostImageRepository;
 import com.clickpick.repository.PostRepository;
 import com.clickpick.repository.ProfileImageRepository;
 import com.clickpick.repository.UserRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +16,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -35,6 +32,8 @@ public class ImageService {
 
     @Value("${spring.servlet.multipart.location}")
     private String uploadPath;
+    @Value("${custom.dns}")
+    private String dns;
 
 
     /* 프로필 사진 추가, 변경 */
@@ -82,26 +81,30 @@ public class ImageService {
     }
 
     /* 프로필 사진 조회 */
-    public ResponseEntity<?> myProfile(String userId) {
+    public ResponseEntity myProfile(String userId) {
         Optional<User> userResult = userRepository.findById(userId);
         if(userResult.isPresent()){
             Optional<ProfileImage> profileResult = profileImageRepository.findUserId(userId);
             if(profileResult.isPresent()){ // 프로필이 있는 경우
                 ProfileImage profileImage = profileResult.get();
                 String ImagePath = profileImage.getFilePath() + "/" + profileImage.getFileName();
-                byte[] fileArray = getImage(ImagePath);
-                return ResponseEntity.status(HttpStatus.OK).body(fileArray);
+                String url = dns + "/profile/images/" + profileImage.getFileName();
+                //byte[] fileArray = getImage(ImagePath);
+                return ResponseEntity.status(HttpStatus.OK).body(url);
 
             }
             else{ // 프로필이 없는 경우
                 String imagePath = uploadPath + "/profile/default.png";
-                byte[] fileArray = getImage(imagePath);
-                return ResponseEntity.status(HttpStatus.OK).body(fileArray);
+                String url = dns + "/profile/images/" + "default.png";
+                //byte[] fileArray = getImage(imagePath);
+
+                return ResponseEntity.status(HttpStatus.OK).body(url);
             }
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("회원만 사용 가능한 기능입니다.");
     }
 
+    /* 이미지 가져오는 함수 */
     private static byte[] getImage(String ImagePath) {
         InputStream in = null;
         try{
@@ -130,7 +133,8 @@ public class ImageService {
 
 
     private void uploadProfileImage(MultipartFile file, User user) throws IOException {
-        String fileName = user.getId() + "_" + file.getOriginalFilename();
+
+        String fileName = user.getId() + "." +getFileExtension(file);
         String filePath = uploadPath + "/profile";
 
         ProfileImage profileImage = new ProfileImage(user, fileName, filePath, file.getSize());
@@ -146,6 +150,17 @@ public class ImageService {
         if(fileToDelete.exists()) {
             fileToDelete.delete();
         }
+    }
+
+    public String getFileExtension(MultipartFile file) {
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename != null && !originalFilename.isEmpty()) {
+            int lastDotIndex = originalFilename.lastIndexOf('.');
+            if (lastDotIndex > 0) {
+                return originalFilename.substring(lastDotIndex + 1);
+            }
+        }
+        return null; // 확장자가 없는 경우
     }
 
 }
