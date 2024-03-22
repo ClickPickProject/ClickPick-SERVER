@@ -1,7 +1,6 @@
 package com.clickpick.repository;
 
 import com.clickpick.domain.Comment;
-import com.clickpick.domain.Post;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,4 +14,7 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     Optional<Comment> findUserComment(@Param("commentId")Long commentId, @Param("userId")String userId); // 유저가 작성한 게시글 조회
 
     Optional<List<Comment>> findByPostId(Long postId);
+
+    @Query("select c from Comment c where c.user.id =:userId")
+    Optional<List<Comment>> findUserId(@Param("userId")String userId);
 }

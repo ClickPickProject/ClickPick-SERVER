@@ -1,6 +1,7 @@
 package com.clickpick.controller;
 
 import com.clickpick.dto.post.CreatePostReq;
+import com.clickpick.dto.post.ReportPostReq;
 import com.clickpick.dto.post.UpdatePostReq;
 import com.clickpick.service.PostService;
 import jakarta.validation.Valid;
@@ -66,14 +67,6 @@ public class PostController {
         return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
     }
 
-    /* 자신이 작성한 게시글 리스트 조회 */
-    @GetMapping("/api/member/post/list")
-    public ResponseEntity viewMyPostList(@RequestParam(required = false, defaultValue = "0", value = "page")int page){
-        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
-        ResponseEntity responseEntity = postService.myListPost(page,userId);
-        return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
-    }
-
     /* 베스트 게시글 리스트 조회 */
     @GetMapping("/api/post/list/best")
     public ResponseEntity viewBestPostList(){
@@ -111,6 +104,14 @@ public class PostController {
     @GetMapping("/api/post/category")
     public ResponseEntity searchCategory(@RequestParam(required = false, defaultValue = "0", value = "page")int page, String category){
         ResponseEntity responseEntity = postService.findCategory(page, category);
+        return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
+    }
+
+    /* 게시글 신고 */
+    @PostMapping("/api/member/report/post")
+    public ResponseEntity reportPost(@RequestBody @Valid ReportPostReq reportPostReq){
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        ResponseEntity responseEntity = postService.complainPost(userId, reportPostReq);
         return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
     }
 

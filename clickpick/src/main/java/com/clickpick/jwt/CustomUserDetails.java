@@ -30,6 +30,8 @@ public class CustomUserDetails implements UserDetails {
         return user.getPassword();
     }
 
+    public String getNickname() {return user.getNickname();}
+
     @Override
     public String getUsername() {
         return user.getUserId();

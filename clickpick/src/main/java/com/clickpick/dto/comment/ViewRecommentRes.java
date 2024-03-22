@@ -20,6 +20,7 @@ public class ViewRecommentRes {
     @NotNull
     private Long likeCount;
     private boolean likeCommentCheck;
+    private Long parentId;
 
     public ViewRecommentRes(Comment comment, boolean likeCommentCheck) {
         this.commentId = comment.getId();
@@ -28,5 +29,6 @@ public class ViewRecommentRes {
         this.createAt = comment.getCreateAt();
         this.likeCount = (long) comment.getCommentLikes().size();
         this.likeCommentCheck = likeCommentCheck;
+        this.parentId = comment.getParent().getId();
     }
 }

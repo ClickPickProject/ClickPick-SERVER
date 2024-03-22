@@ -3,10 +3,7 @@ package com.clickpick.service;
 import com.clickpick.domain.*;
 import com.clickpick.dto.comment.ViewCommentRes;
 import com.clickpick.dto.comment.ViewRecommentRes;
-import com.clickpick.dto.post.CreatePostReq;
-import com.clickpick.dto.post.UpdatePostReq;
-import com.clickpick.dto.post.ViewPostListRes;
-import com.clickpick.dto.post.ViewPostRes;
+import com.clickpick.dto.post.*;
 import com.clickpick.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,6 +29,7 @@ public class PostService {
     private final PostLikeRepository postLikeRepository;
     private final CommentRepository commentRepository;
     private final CommentLikeRepository commentLikeRepository;
+    private final ReportPostRepository reportPostRepository;
 
     /* 게시글 작성 */
     @Transactional
@@ -44,7 +42,6 @@ public class PostService {
             User user = result.get();
             Post post = new Post(user,createPostReq.getPosition(),createPostReq.getContent(),createPostReq.getTitle(),createPostReq.getPostCategory());
             postRepository.save(post);
-            System.out.println("createPostReq = " + createPostReq.getHashtags());
             if(createPostReq.getHashtags() != null){
                 for (String hashtag : createPostReq.getHashtags()) {
                     Hashtag addHashtag = new Hashtag(post,hashtag);
@@ -222,9 +219,36 @@ public class PostService {
     }
 
     /* 자신이 작성한 게시글 리스트 조회 */
-    public ResponseEntity myListPost(int page, String userId){
+    public ResponseEntity myPostList(int page, String userId){
         PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC,"createAt"));
         Page<Post> pagingResult = postRepository.findUserId(userId, pageRequest);
+        Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post));
+
+        return ResponseEntity.status(HttpStatus.OK).body(map);
+    }
+
+    /* 좋아요 한 게시글 리스트 조회*/
+    public ResponseEntity myLikePostList(int page, String userId) {
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC,"createAt"));
+        Page<Post> pagingResult = postRepository.findLikePost(userId, pageRequest);
+        Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post));
+
+        return ResponseEntity.status(HttpStatus.OK).body(map);
+    }
+
+    /* 댓글을 단 게시글 리스트 조회 */
+    public ResponseEntity myCommentList(int page, String userId) {
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC,"createAt"));
+        Page<Post> pagingResult = postRepository.findCommentUserId(userId, pageRequest);
+        Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post));
+
+        return ResponseEntity.status(HttpStatus.OK).body(map);
+    }
+
+    /* 좋아요 한 댓글이 달린 게시글 리스트 조회 */
+    public ResponseEntity myLikeCommentList(int page, String userId) {
+        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC,"createAt"));
+        Page<Post> pagingResult = postRepository.findLikeComment(userId, pageRequest);
         Page<ViewPostListRes> map = pagingResult.map(post -> new ViewPostListRes(post));
 
         return ResponseEntity.status(HttpStatus.OK).body(map);
@@ -295,6 +319,29 @@ public class PostService {
     }
 
 
+    /* 게시글 신고 */
+    @Transactional
+    public ResponseEntity complainPost(String userId, ReportPostReq reportPostReq) {
+        Optional<User> userResult = userRepository.findById(userId);
+        if(userResult.isPresent()){
+            Optional<ReportPost> reportPostResult = reportPostRepository.findReportPost(reportPostReq.getReportedUserNickname(), reportPostReq.getPostId());
+            if(reportPostResult.isPresent()){
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 처리된 신고입니다.");
+            }
+            Optional<User> reportedUserResult = userRepository.findByNickname(reportPostReq.getReportedUserNickname());
+            Optional<Post> userPostResult = postRepository.findUserPost(reportPostReq.getPostId(), reportedUserResult.get().getId());
+            if(userPostResult.isPresent()){
+
+                ReportPost reportPost = new ReportPost(userResult.get(),reportedUserResult.get(),userPostResult.get(),reportPostReq.getReason());
+                reportPostRepository.save(reportPost);
+                return ResponseEntity.status(HttpStatus.OK).body("신고를 완료하였습니다.");
+            }
+            return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("게시글과 작성자가 올바르지 않습니다.");
+        }
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("회원만 사용 가능한 기능입니다.");
+    }
+
     public static boolean isEnumValue(String category) {
         try {
             // Enum.valueOf() 메서드를 사용하여 입력값이 Enum 타입에 속하는지 확인
@@ -304,4 +351,6 @@ public class PostService {
             return true; // 속하지 않는다면 true 반환
         }
     }
+
+
 }

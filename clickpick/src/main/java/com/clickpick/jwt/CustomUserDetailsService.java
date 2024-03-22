@@ -24,13 +24,13 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<User> result = userRepository.findById(username);
         if(result.isPresent()){
-            JWTUserDto jwtUserDto = new JWTUserDto(result.get().getId(),result.get().getPassword(),result.get().getStatus().toString());
+            JWTUserDto jwtUserDto = new JWTUserDto(result.get().getId(),result.get().getNickname(),result.get().getPassword(),result.get().getStatus().toString());
             return new CustomUserDetails(jwtUserDto);
         }
         else{
             Optional<Admin> adminResult = adminRepository.findById(username);
             if(adminResult.isPresent()){
-                JWTUserDto jwtAdminDto = new JWTUserDto(adminResult.get().getId(),adminResult.get().getPassword(),"ADMIN");
+                JWTUserDto jwtAdminDto = new JWTUserDto(adminResult.get().getId(),"ADMIN",adminResult.get().getPassword(),"ADMIN");
                 return new CustomUserDetails(jwtAdminDto);
             }
         }
