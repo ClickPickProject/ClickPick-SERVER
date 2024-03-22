@@ -57,5 +57,7 @@ public class User {
 
     }
 
-
+   public void changeStatus(UserStatus status) {
+       this.status = status;
+   }
 }
