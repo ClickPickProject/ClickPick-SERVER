@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,6 +24,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final MailService mailService;
     private final RedisUtil redisUtil;
+    private final CommentRepository commentRepository;
 
 
     /* 회원 가입 */
@@ -217,8 +219,21 @@ public class UserService {
         Optional<User> userResult = userRepository.findById(userId);
         if(userResult.isPresent()){
             User user = userResult.get();
+            // 게시글은 연쇄 삭제, 댓글은 대댓글이 있는 경우 삭제된 사용자로 변경?
+            Optional<List<Comment>> commentResult = commentRepository.findUserId(user.getId());
+            if(commentResult.isPresent()){
+                for(Comment comment : commentResult.get()){
+                    if(comment.getParent() == null && comment.getComments().size() > 0){
+                        Optional<User> deleteUser = userRepository.findById("delete@delete.com");
+                        User tempUser = deleteUser.get();
+                        comment.leaveUserComment(tempUser); // 대댓글 살리기 위함
+                        continue;
+                    }
+                    commentRepository.delete(comment);
+                }
+            }
             userRepository.delete(user);
-            //댓글, 게시글 유저 변경
+
 
             return ResponseEntity.status(HttpStatus.OK).body("회원탈퇴가 완료되었습니다.");
         }

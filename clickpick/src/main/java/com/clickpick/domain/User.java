@@ -7,6 +7,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -34,6 +36,8 @@ public class User {
     private UserStatus status;
     @OneToOne(mappedBy = "user")
     private ProfileImage profileImage;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true) // 유저 삭제시 post 연쇄 삭제
+    private List<Post> posts = new ArrayList<>();
 
 
 

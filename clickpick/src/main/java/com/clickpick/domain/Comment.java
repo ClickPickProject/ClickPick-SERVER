@@ -61,6 +61,11 @@ public class Comment {
 
     }
 
+    public void leaveUserComment(User user){
+        this.status = CommentStatus.valueOf("DELETE");
+        this.content = "삭제된 댓글입니다.";
+        this.user = user;
+    }
     public void changeComment(String content){
         this.content = content;
     }

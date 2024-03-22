@@ -46,11 +46,11 @@ public class Post {
     @Enumerated(EnumType.STRING)
     @ColumnDefault("'자유'")
     private PostCategory postCategory;
-    @OneToMany(mappedBy = "post",cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Hashtag> hashtags = new ArrayList<>(); //
-    @OneToMany(mappedBy = "post",cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<PostLike> postLikes = new ArrayList<>();
-    @OneToMany(mappedBy = "post",cascade = CascadeType.REMOVE,orphanRemoval = true)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE,orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 
 
