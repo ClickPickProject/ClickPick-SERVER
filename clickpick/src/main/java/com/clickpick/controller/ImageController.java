@@ -42,6 +42,7 @@ public class ImageController {
     }
 
     /* 프로필 사진 조회 */ //보여줄땐?
+
     @GetMapping(value = "api/member/profileimage")
     public ResponseEntity viewProfile(){
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -50,10 +51,20 @@ public class ImageController {
     }
 
     /* 게시글 사진 추가 */
-
-    /* 게시글 사진 변경 */
+    @PostMapping("api/member/post/image")
+    public ResponseEntity uploadPostImage(@RequestParam("image")MultipartFile file) throws IOException {
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        ResponseEntity responseEntity = imageService.createPostImage(userId, file);
+        return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
+    }
 
     /* 게시글 사진 삭제 */
+    @DeleteMapping("/api/member/post/image/{image_name}")
+    public ResponseEntity dropImage(@RequestParam("image_name")String imageName){
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+        ResponseEntity responseEntity = imageService.deletePostImage(userId, imageName);
+        return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
+    }
 
     /* 게시글 사진 조회 */
 

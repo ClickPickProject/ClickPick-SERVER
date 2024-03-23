@@ -26,11 +26,11 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findLikePost(@Param("userId")String userId, Pageable pageable);
 
     // 작성한 댓글의 게시글 리스트 검색 쿼리
-    @Query("select distinct p from Post p join fetch p.comments c where c.user.id =:userId")
+    @Query("select distinct p from Post p join fetch p.comments c where c.user.id =:userId") //fetch 시 별칭 쓰면 안된다더라...
     Page<Post> findCommentUserId(@Param("userId")String userId, Pageable pageable);
 
     // 좋아요 한 댓글의 게시글 리스트 검색 쿼리
-    @Query("select distinct p from Post p join fetch p.comments c join c.commentLikes cl where cl.user.id =:userId")
+    @Query("select distinct p from Post p join fetch p.comments c join c.commentLikes cl where cl.user.id =:userId") //fetch 시 별칭 쓰면 안된다더라...
     Page<Post> findLikeComment(@Param("userId")String userId, Pageable pageable);
 
     // 좋아요 top3 검색 쿼리

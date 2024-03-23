@@ -2,6 +2,7 @@ package com.clickpick.service;
 
 import com.clickpick.domain.ProfileImage;
 import com.clickpick.domain.User;
+import com.clickpick.dto.image.UrlRes;
 import com.clickpick.repository.PostImageRepository;
 import com.clickpick.repository.PostRepository;
 import com.clickpick.repository.ProfileImageRepository;
@@ -89,20 +90,31 @@ public class ImageService {
                 String ImagePath = profileImage.getFilePath() + "/" + profileImage.getFileName();
                 String url = dns + "/profile/images/" + profileImage.getFileName();
                 //byte[] fileArray = getImage(ImagePath);
-                return ResponseEntity.status(HttpStatus.OK).body(url);
+                UrlRes urlRes = new UrlRes(url);
+                return ResponseEntity.status(HttpStatus.OK).body(urlRes);
 
             }
             else{ // 프로필이 없는 경우
                 String imagePath = uploadPath + "/profile/default.png";
                 String url = dns + "/profile/images/" + "default.png";
                 //byte[] fileArray = getImage(imagePath);
+                UrlRes urlRes = new UrlRes(url);
 
-                return ResponseEntity.status(HttpStatus.OK).body(url);
+                return ResponseEntity.status(HttpStatus.OK).body(urlRes);
             }
         }
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body("회원만 사용 가능한 기능입니다.");
     }
 
+    /* 게시글 이미지 추가 */
+    public ResponseEntity createPostImage(String userId, MultipartFile file) {
+        return null;
+    }
+
+    /* 게시글 이미지 삭제 */
+    public ResponseEntity deletePostImage(String userId, String imageName){
+        return null;
+    }
     /* 이미지 가져오는 함수 */
     private static byte[] getImage(String ImagePath) {
         InputStream in = null;
@@ -161,5 +173,6 @@ public class ImageService {
         }
         return null; // 확장자가 없는 경우
     }
+
 
 }

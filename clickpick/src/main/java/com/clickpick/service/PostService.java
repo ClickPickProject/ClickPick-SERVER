@@ -138,9 +138,9 @@ public class PostService {
             /* 댓글 조회 */
             Optional<List<Comment>> commentResult = commentRepository.findByPostId(postId);
             List<ViewCommentRes> viewCommentResList = new ArrayList<>();
-            boolean likeCommentCheck = false;
             if(commentResult.isPresent()){
                 for(Comment comment : commentResult.get()){
+                    boolean likeCommentCheck = false;
                     if(userId != null || userId.equals("anonymousUser")){ // 댓글 좋아요 확인 로직
                         Optional<CommentLike> commentLikeResult = commentLikeRepository.checkLikeComment(comment.getId(), userId);
                         if(commentLikeResult.isPresent()){
