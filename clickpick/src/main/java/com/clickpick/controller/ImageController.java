@@ -25,7 +25,7 @@ public class ImageController {
     private final ImageService imageService;
 
     /* 프로필 사진 추가, 변경 */
-    @PostMapping("/api/member/profileimage")
+    @PostMapping("/api/member/profile/image")
     public ResponseEntity uploadProfile(@RequestParam("image")MultipartFile file) throws IOException {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         ResponseEntity responseEntity = imageService.createProfile(userId, file);
@@ -34,7 +34,7 @@ public class ImageController {
 
 
     /* 프로필 사진 삭제 */
-    @DeleteMapping("api/member/profileimage")
+    @DeleteMapping("api/member/profile/image")
     public ResponseEntity dropProfile(){
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         ResponseEntity responseEntity = imageService.deleteProfile(userId);
@@ -43,7 +43,7 @@ public class ImageController {
 
     /* 프로필 사진 조회 */ //보여줄땐?
 
-    @GetMapping(value = "api/member/profileimage")
+    @GetMapping(value = "api/member/profile/image")
     public ResponseEntity viewProfile(){
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
         ResponseEntity responseEntity = imageService.myProfile(userId);
