@@ -19,6 +19,7 @@ public class ViewPostListRes {
     private List<String> hashtags;
     private String postCategory;
     private Long commentCount;
+    private String profileUrl;
 
     public ViewPostListRes(Post post) {
         this.postId = post.getId();
@@ -30,6 +31,13 @@ public class ViewPostListRes {
         this.hashtags = post.getHashtags().stream().map(Hashtag::getContent).collect(Collectors.toList());
         this.postCategory = post.getPostCategory().toString();
         this.commentCount = (long) post.getComments().size();
+        if(post.getUser().getProfileImage() == null){
+            this.profileUrl = "http://clickpick.iptime.org:8080/profile/images/default.png";
+        }
+        else {
+            this.profileUrl = post.getUser().getProfileImage().getReturnUrl();
+        }
+
     }
 
 

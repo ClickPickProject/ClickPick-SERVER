@@ -92,7 +92,7 @@ public class ImageService {
                 String ImagePath = profileImage.getFilePath() + "/" + profileImage.getFileName();
                 String url = dns + "/profile/images/" + profileImage.getFileName();
                 //byte[] fileArray = getImage(ImagePath);
-                UrlRes urlRes = new UrlRes(url);
+                UrlRes urlRes = new UrlRes(url, profileImage.getFileSize());
                 return ResponseEntity.status(HttpStatus.OK).body(urlRes);
 
             }
@@ -121,7 +121,7 @@ public class ImageService {
             if(postResult.isPresent()){ // 게시글 존재 시
                 String name = uploadPostImage(file, postResult.get(), user); // 업로드 + 파일 이름 가져옴
                 String url = dns + "/post/images/" + name;
-                UrlRes urlRes = new UrlRes(url);
+                UrlRes urlRes = new UrlRes(url, file.getSize());
 
                 return ResponseEntity.status(HttpStatus.OK).body(urlRes);
 
@@ -182,6 +182,8 @@ public class ImageService {
         String filePath = uploadPath + "/profile";
 
         ProfileImage profileImage = new ProfileImage(user, fileName, filePath, file.getSize());
+        String url = dns + "/post/images/" + fileName;
+        profileImage.addReturnUrl(url);
         profileImageRepository.save(profileImage);
 
         File saveFile = new File(filePath,fileName);
