@@ -42,17 +42,17 @@ public class ImageController {
 
     /* 게시글 사진 추가 */
     @PostMapping("api/member/post/image")
-    public ResponseEntity uploadPostImage(@RequestParam("postId") Long postId, @RequestParam("image")MultipartFile file) throws IOException {
+    public ResponseEntity uploadPostImage(@RequestParam("image")MultipartFile file) throws IOException {
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
-        ResponseEntity responseEntity = imageService.createPostImage(userId, postId, file);
+        ResponseEntity responseEntity = imageService.createPostImage(userId, file);
         return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
     }
 
     /* 게시글 사진 삭제 */
-    @DeleteMapping("/api/member/post/image/{post_id}/{image_name}")
-    public ResponseEntity dropImage(@PathVariable("post_id")Long postId ,@PathVariable("image_name")String imageName){
+    @DeleteMapping("/api/member/post/image/{image_name}")
+    public ResponseEntity dropImage(@PathVariable("image_name")String imageName){
         String userId = SecurityContextHolder.getContext().getAuthentication().getName();
-        ResponseEntity responseEntity = imageService.deletePostImage(userId, postId, imageName);
+        ResponseEntity responseEntity = imageService.deletePostImage(userId, imageName);
         return ResponseEntity.status(responseEntity.getStatusCode()).body(responseEntity.getBody());
     }
 

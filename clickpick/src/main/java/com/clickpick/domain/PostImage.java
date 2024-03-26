@@ -20,10 +20,6 @@ public class PostImage {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", nullable = false)
-    private Post post;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
@@ -38,8 +34,7 @@ public class PostImage {
     private LocalDateTime createAt;
 
 
-    public PostImage(Post post, User user, String fileName, String filePath, Long fileSize) {
-        this.post = post;
+    public PostImage(User user, String fileName, String filePath, Long fileSize) {
         this.fileName = fileName;
         this.filePath = filePath;
         this.fileSize = fileSize;

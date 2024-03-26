@@ -52,8 +52,7 @@ public class Post {
     private List<PostLike> postLikes = new ArrayList<>();
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
-    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<PostImage> postImages = new ArrayList<>();
+
 
 
     // 이미지 넣어야함

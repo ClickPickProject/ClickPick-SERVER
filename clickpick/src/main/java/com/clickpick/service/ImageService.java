@@ -110,33 +110,31 @@ public class ImageService {
 
     /* 게시글 이미지 추가 */
     @Transactional
-    public ResponseEntity createPostImage(String userId, Long postId, MultipartFile file) throws IOException {
+    public ResponseEntity createPostImage(String userId, MultipartFile file) throws IOException {
         Optional<User> userResult = userRepository.findById(userId);
         if(userResult.isPresent()){
             User user = userResult.get();
-            Optional<Post> postResult = postRepository.findById(postId);
             if(file.getContentType().startsWith("image") == false){
                 return  ResponseEntity.status(HttpStatus.CONFLICT).body("이미지만 업로드 가능합니다.");
             }
-            if(postResult.isPresent()){ // 게시글 존재 시
-                String name = uploadPostImage(file, postResult.get(), user); // 업로드 + 파일 이름 가져옴
-                String url = dns + "/post/images/" + name;
-                UrlRes urlRes = new UrlRes(url, file.getSize());
+             // 게시글 존재 시
+            String name = uploadPostImage(file, user); // 업로드 + 파일 이름 가져옴
+            String url = dns + "/post/images/" + name;
+            UrlRes urlRes = new UrlRes(url, file.getSize());
 
-                return ResponseEntity.status(HttpStatus.OK).body(urlRes);
+            return ResponseEntity.status(HttpStatus.OK).body(urlRes);
 
-            }
-            return  ResponseEntity.status(HttpStatus.NOT_FOUND).body("게시글이 존재하지 않습니다.");
+
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("회원만 사용 가능한 기능입니다.");
     }
 
     /* 게시글 이미지 삭제 */
     @Transactional
-    public ResponseEntity deletePostImage(String userId, Long postId, String imageName){
+    public ResponseEntity deletePostImage(String userId, String imageName){
         Optional<User> userResult = userRepository.findById(userId);
         if(userResult.isPresent()){
-            Optional<PostImage> postImageResult = postImageRepository.findPostImage(userId, postId, imageName);
+            Optional<PostImage> postImageResult = postImageRepository.findPostImage(userId, imageName);
             if(postImageResult.isPresent()){
                 PostImage postImage = postImageResult.get();
                 deleteLocalProfileImage(postImage.getFilePath()+ "/" + postImage.getFileName());
@@ -191,13 +189,13 @@ public class ImageService {
         file.transferTo(saveFile);
     }
 
-    private String uploadPostImage(MultipartFile file, Post post, User user) throws IOException {
+    private String uploadPostImage(MultipartFile file, User user) throws IOException {
 
         UUID uuid = UUID.randomUUID();
         String fileName = uuid +"." +getFileExtension(file);
         String filePath = uploadPath + "/post";
 
-        PostImage postImage = new PostImage(post, user, fileName, filePath, file.getSize());
+        PostImage postImage = new PostImage(user, fileName, filePath, file.getSize());
         postImageRepository.save(postImage);
 
         File saveFile = new File(filePath,fileName);

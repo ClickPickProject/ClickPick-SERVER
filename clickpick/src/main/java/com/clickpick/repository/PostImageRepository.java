@@ -9,6 +9,6 @@ import java.util.Optional;
 
 public interface PostImageRepository extends JpaRepository<PostImage, Long> {
 
-    @Query("select pi from PostImage pi where pi.user.id =:userId and pi.post.id =:postId and pi.fileName=:fileName")
-    Optional<PostImage> findPostImage(@Param("userId")String userId, @Param("postId")Long postId, @Param("fileName")String fileName);
+    @Query("select pi from PostImage pi where pi.user.id =:userId and pi.fileName=:fileName")
+    Optional<PostImage> findPostImage(@Param("userId")String userId, @Param("fileName")String fileName);
 }
