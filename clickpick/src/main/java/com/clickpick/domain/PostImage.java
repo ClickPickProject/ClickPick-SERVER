@@ -23,11 +23,16 @@ public class PostImage {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
+    private Post post;
+
     private String fileName;
 
     private String filePath;
 
     private Long fileSize;
+
 
     @CreationTimestamp
     @Column(nullable = false)
@@ -39,5 +44,9 @@ public class PostImage {
         this.filePath = filePath;
         this.fileSize = fileSize;
         this.user = user;
+    }
+
+    public void addPost(Post post){ // 게시글 작성 시 이미지와 게시글 연결
+        this.post = post;
     }
 }

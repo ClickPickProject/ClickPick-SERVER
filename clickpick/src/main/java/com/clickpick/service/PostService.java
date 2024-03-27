@@ -30,6 +30,7 @@ public class PostService {
     private final CommentRepository commentRepository;
     private final CommentLikeRepository commentLikeRepository;
     private final ReportPostRepository reportPostRepository;
+    private final PostImageRepository postImageRepository;
 
     /* 게시글 작성 */
     @Transactional
@@ -48,6 +49,15 @@ public class PostService {
                     hashtagRepository.save(addHashtag);
                 }
             }
+            if(createPostReq.getImageName() != null){
+                for (String name : createPostReq.getImageName()){
+                    Optional<PostImage> postImageResult = postImageRepository.findByFileName(name);
+                    if(postImageResult.isPresent()){
+                        postImageResult.get().addPost(post);
+                    }
+                }
+            }
+
 
             return ResponseEntity.status(HttpStatus.OK).body("게시글이 등록되었습니다.");
         }

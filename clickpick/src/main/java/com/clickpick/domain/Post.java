@@ -54,7 +54,6 @@ public class Post {
     private List<Comment> comments = new ArrayList<>();
 
 
-
     // 이미지 넣어야함
 
 
