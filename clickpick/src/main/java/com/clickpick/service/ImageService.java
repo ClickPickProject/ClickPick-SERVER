@@ -1,6 +1,5 @@
 package com.clickpick.service;
 
-import com.clickpick.domain.Post;
 import com.clickpick.domain.PostImage;
 import com.clickpick.domain.ProfileImage;
 import com.clickpick.domain.User;
@@ -117,9 +116,10 @@ public class ImageService {
             if(file.getContentType().startsWith("image") == false){
                 return  ResponseEntity.status(HttpStatus.CONFLICT).body("이미지만 업로드 가능합니다.");
             }
-             // 게시글 존재 시
-            String name = uploadPostImage(file, user); // 업로드 + 파일 이름 가져옴
-            String url = dns + "/post/images/" + name;
+
+            PostImage postImage = uploadPostImage(file, user); // 업로드 + 파일 이름 가져옴
+            String url = dns + "/post/images/" + postImage.getFileName();
+            postImage.addReturnUrl(url);
             UrlRes urlRes = new UrlRes(url, file.getSize());
 
             return ResponseEntity.status(HttpStatus.OK).body(urlRes);
@@ -189,7 +189,7 @@ public class ImageService {
         file.transferTo(saveFile);
     }
 
-    private String uploadPostImage(MultipartFile file, User user) throws IOException {
+    private PostImage uploadPostImage(MultipartFile file, User user) throws IOException {
 
         UUID uuid = UUID.randomUUID();
         String fileName = uuid +"." +getFileExtension(file);
@@ -202,7 +202,7 @@ public class ImageService {
 
         file.transferTo(saveFile);
 
-        return fileName;
+        return postImage;
     }
 
     private void deleteLocalProfileImage(String filePath) {

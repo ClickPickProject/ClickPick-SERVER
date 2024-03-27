@@ -33,6 +33,8 @@ public class PostImage {
 
     private Long fileSize;
 
+    private String returnUrl;
+
 
     @CreationTimestamp
     @Column(nullable = false)
@@ -44,6 +46,10 @@ public class PostImage {
         this.filePath = filePath;
         this.fileSize = fileSize;
         this.user = user;
+    }
+
+    public void addReturnUrl(String url){
+        this.returnUrl = url;
     }
 
     public void addPost(Post post){ // 게시글 작성 시 이미지와 게시글 연결

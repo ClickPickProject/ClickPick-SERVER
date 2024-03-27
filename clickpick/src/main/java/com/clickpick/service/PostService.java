@@ -49,8 +49,8 @@ public class PostService {
                     hashtagRepository.save(addHashtag);
                 }
             }
-            if(createPostReq.getImageName() != null){
-                for (String name : createPostReq.getImageName()){
+            if(createPostReq.getImageNames() != null){
+                for (String name : createPostReq.getImageNames()){
                     Optional<PostImage> postImageResult = postImageRepository.findByFileName(name);
                     if(postImageResult.isPresent()){
                         postImageResult.get().addPost(post);
@@ -86,7 +86,7 @@ public class PostService {
     public ResponseEntity renewPost(Long postId, String userId, UpdatePostReq updatePostReq){
         Optional<Post> result = postRepository.findUserPost(postId, userId);
         if(isEnumValue(updatePostReq.getPostCategory())){
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("존재하지 않는카테고리입니다.");
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("존재하지 않는 카테고리입니다.");
         }
         if(result.isPresent()){
             Post post = result.get();
@@ -115,6 +115,15 @@ public class PostService {
                     }
                 }
 
+            }
+
+            if(updatePostReq.getUpdateImageNames() != null){
+                for (String name : updatePostReq.getUpdateImageNames()){
+                    Optional<PostImage> postImageResult = postImageRepository.findByFileName(name);
+                    if(postImageResult.isPresent()){
+                        postImageResult.get().addPost(post);
+                    }
+                }
             }
             return ResponseEntity.status(HttpStatus.OK).body("수정이 완료되었습니다.");
         }
@@ -272,6 +281,7 @@ public class PostService {
         if(bestPosts.size() > 0){
             for (Post bestPost : bestPosts) {
                 ViewPostListRes viewPostListRes = new ViewPostListRes(bestPost);
+
                 viewPostListResList.add(viewPostListRes);
             }
         }

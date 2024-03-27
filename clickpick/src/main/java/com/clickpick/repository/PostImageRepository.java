@@ -13,4 +13,6 @@ public interface PostImageRepository extends JpaRepository<PostImage, Long> {
     Optional<PostImage> findPostImage(@Param("userId")String userId, @Param("fileName")String fileName);
 
     Optional<PostImage> findByFileName(String fileName);
+
+    //@Query("select pi from PostImage pi where pi.post.id =:postId")
 }

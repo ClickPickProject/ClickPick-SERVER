@@ -20,6 +20,7 @@ public class ViewPostListRes {
     private String postCategory;
     private Long commentCount;
     private String profileUrl;
+    private String thumbnailUrl;
 
     public ViewPostListRes(Post post) {
         this.postId = post.getId();
@@ -38,6 +39,10 @@ public class ViewPostListRes {
             this.profileUrl = post.getUser().getProfileImage().getReturnUrl();
         }
 
+    }
+
+    public void addThumbnail(String url){
+        this.thumbnailUrl = url;
     }
 
 

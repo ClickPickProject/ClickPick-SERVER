@@ -19,4 +19,6 @@ public class UpdatePostReq {
     private String position;
 
     private List<String> hashtags;
+
+    private List<String> updateImageNames;
 }
