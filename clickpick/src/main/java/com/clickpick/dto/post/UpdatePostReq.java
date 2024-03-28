@@ -20,5 +20,7 @@ public class UpdatePostReq {
 
     private List<String> hashtags;
 
+    private String thumbnailImage;
+
     private List<String> updateImageNames;
 }

@@ -49,6 +49,13 @@ public class PostService {
                     hashtagRepository.save(addHashtag);
                 }
             }
+            if(createPostReq.getThumbnailImage() != null){
+                Optional<PostImage> thumbnail = postImageRepository.findByFileName(createPostReq.getThumbnailImage());
+                if(thumbnail.isPresent()){
+                    thumbnail.get().changeThumbnail();
+                    thumbnail.get().addPost(post);
+                }
+            }
             if(createPostReq.getImageNames() != null){
                 for (String name : createPostReq.getImageNames()){
                     Optional<PostImage> postImageResult = postImageRepository.findByFileName(name);
@@ -115,6 +122,18 @@ public class PostService {
                     }
                 }
 
+            }
+            if(updatePostReq.getThumbnailImage() != null){
+                Optional<PostImage> thumbnail = postImageRepository.findByFileName(updatePostReq.getThumbnailImage());
+                if(thumbnail.isPresent()){
+                    Optional<PostImage> preThumbnail = postImageRepository.findThumbnail(post.getId(), PostImageStatus.THUMBNAIL);
+                    if(preThumbnail.isPresent()){
+                        preThumbnail.get().changeNotThumbnail();
+                    }
+                    thumbnail.get().changeThumbnail();
+                    thumbnail.get().addPost(post);
+
+                }
             }
 
             if(updatePostReq.getUpdateImageNames() != null){
@@ -276,17 +295,21 @@ public class PostService {
     /* 좋아요가 많은 게시글 리스트 조회(3개) */
     public ResponseEntity bestListPost(){
         List<Post> bestPosts = postRepository.findTop3LikePost();
-        List<ViewPostListRes> viewPostListResList = new ArrayList<>();
+        List<ViewBestPostListRes> viewBestPostListResList = new ArrayList<>();
 
         if(bestPosts.size() > 0){
             for (Post bestPost : bestPosts) {
-                ViewPostListRes viewPostListRes = new ViewPostListRes(bestPost);
+                ViewBestPostListRes viewBestPostListRes = new ViewBestPostListRes(bestPost);
+                Optional<PostImage> thumbnail = postImageRepository.findThumbnail(bestPost.getId(), PostImageStatus.THUMBNAIL);
+                if(thumbnail.isPresent()){
+                    viewBestPostListRes.addThumbnail(thumbnail.get().getReturnUrl());
+                }
 
-                viewPostListResList.add(viewPostListRes);
+                viewBestPostListResList.add(viewBestPostListRes);
             }
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(viewPostListResList);
+        return ResponseEntity.status(HttpStatus.OK).body(viewBestPostListResList);
     }
 
     /* 게시글 작성자의 닉네임 검색 */

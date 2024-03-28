@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 
@@ -35,6 +36,9 @@ public class PostImage {
 
     private String returnUrl;
 
+    @Enumerated(EnumType.STRING)
+    private PostImageStatus postImageStatus;
+
 
     @CreationTimestamp
     @Column(nullable = false)
@@ -46,6 +50,7 @@ public class PostImage {
         this.filePath = filePath;
         this.fileSize = fileSize;
         this.user = user;
+        this.postImageStatus = PostImageStatus.NORMAL;
     }
 
     public void addReturnUrl(String url){
@@ -54,5 +59,13 @@ public class PostImage {
 
     public void addPost(Post post){ // 게시글 작성 시 이미지와 게시글 연결
         this.post = post;
+    }
+
+    public void changeThumbnail(){
+        this.postImageStatus = PostImageStatus.valueOf("THUMBNAIL");
+    }
+
+    public void changeNotThumbnail(){
+        this.postImageStatus = PostImageStatus.valueOf("NORMAL");
     }
 }

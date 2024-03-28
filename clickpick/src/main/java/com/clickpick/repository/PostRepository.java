@@ -14,7 +14,7 @@ import java.util.Optional;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-    @Query("select p from Post p where p.user.id =:userId and p.id =:postId") // 띄어쓰기 주의 =:바로다음에 와야함
+    @Query("select p from Post p where p.user.id =:userId and p.id =:postId") // 띄어쓰기 주의 =:바로다음에 와야함ㄷ
     Optional<Post> findUserPost(@Param("postId")Long postId, @Param("userId")String userId); // 유저가 작성한 게시글 조회
 
     // 작성한 게시글 리스트 검색 쿼리

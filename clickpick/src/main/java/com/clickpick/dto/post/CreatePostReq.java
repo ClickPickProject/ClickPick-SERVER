@@ -24,6 +24,8 @@ public class CreatePostReq {
 
     private List<String> hashtags = new ArrayList<>();
 
+    private String thumbnailImage;
+
     private List<String> imageNames = new ArrayList<>();
 
 
